@@ -1,4 +1,4 @@
-= Asynchrones Programmieren mit Mutiny
+= Smallrye Mutiny: Async for mere mortals
 Julian Schludermann
 1.0, {docdate}
 ifndef::sourcedir[:sourcedir: ../src/main/java]
@@ -10,6 +10,200 @@ ifndef::backend[:backend: html5]
 :source-highlighter: rouge
 :docinfo: shared
 
+== Was ist Mutiny
+*Mutiny* ist eine Programmbibliothek zur [.underline]#reaktiven#, [.underline]#event getriebenen#, [.underline]#asynchronen# Programmierung von Applikationen.
+
+=== Was versteht man unter asynchron?
+Um das Konzept von *asynchroner* Datenverarbeitung besser zu verstehen ist es nützlich zuerst einen Blick auf die *synchrone* Verarbeitung zu werfen.
+
+==== Synchrone Verarbeitung
+image::sync-general.png[]
+Bei der synchronen Datenverarbeitung werden die einzelnen Datenverarbeitungsschritte sequenziell ausgeführt. Bei jeglichen I/O Operationen (Datenbankzugriffe, HTTP Requests, ...) blockiert die Anwendung. Das heißt, solange `Prozess B` keine Antwort geliefert hat, führt `Prozess A` keine weiteren Schritte aus.
+
+Bei der *synchronen* Verarbeitung werden die Aufgaben oder Schritte
+
+* *hintereinander* und
+* in einer *fixen Reihenfolge*
+
+ausgeführt.
+
+==== Asynchrone Verarbeitung
+Die Idee der *asynchronen* Datenverarbeitung ist es, die durch die I/O Operationen entstandene Wartezeit sinnvoll zu nutzen.
+
+image::async-simple.png[]
+
+Anstatt zu blockieren, nimmt `Prozess A` in der Zwischenzeit die nächste Aufgabe auf sich. Man spricht hier von *nicht-blockierender* (*non-blocking*) Ausführung. Wichtig zu verstehen ist, dass die neue Aufgabe ebenfalls eine I/O Operation sein kann und `Prozess A` möglicherweise Zeit für mehrere Aufgaben hat bevor er die Antwort von `Prozess B` erhält.
+
+image::async-complex.png[]
+
+Bei der *asynchronen* Verarbeitung werden die Schritte oder Aufgaben
+
+* in einer *beliebigen Reihenfolge*
+* und *ohne zu blockieren*
+
+erledigt.
+
+==== Asynchron vs Multi-Threaded
+Auch wenn die Begriffe *asynchron* und *Multi-Threaded* gerne vermischt werden, ist es wichtig zu verstehen, dass sie *nicht dasselbe* sind.
+
+Sowohl *asynchrone* Datenverarbeitung als auch *Multithreading* (Mehrsträngigkeit) haben das Ziel mehrere Aufgaben *gleichzeitig* auszuführen.
+
+Die *asynchrone Datenverarbeitung* setzt aber *nicht* voraus, dass dies *parallel* passieren muss. *Parallele* Ausführung ist *das* Merkmal von *Multithreading*.
+
+*Multithreading* ist also "nur" *eine Form* der *asynchronen Datenverarbeitung*.
+
+Bei *Multithreading* geht es um Arbeitsprozesse (*workers*), bei der *asynchronen Datenverarbeitung* um Aufgaben (*tasks*).
+
+Man kann zwischen verschiedenen Arten der Ausführung unterscheiden:
+
+===== Einsträngig synchron
+Die einzelnen Aufgaben sequenziell ausgeführt. Bei I/O Operationen wird blockiert.
+
+image::st-sync.png[]
+
+===== Einsträngig asynchron
+Die einzelnen Aufgaben werden gleichzeitig und in beliebiger Reihenfolge ausgeführt, jedoch *nicht parallel*. I/O Operationen geben Zeit für andere Aufgaben, wodurch die *gleichzeitige* Ausführung ermöglicht wird.
+
+image::st-async.png[]
+
+===== Mehrsträngig asynchron
+Durch die verwendung von mehreren *Threads* werden die Aufgaben *gleichzeitig* und *parallel* ausgeführt und somit asynchron. Die Ausführung auf den einzelnen Threads kann sowohl synchron als auch asynchron erfolgen.
+
+image::mt-async.png[]
+
+===== Zusammenfassung
+*Multi-Threading* ist nicht dasselbe wie *asynchrone* Ausführung.
+
+Aber *Multi-Threading* ist eine Form der *asynchronen* Ausführung.
+
+image::async-vs-threaded-meme.png[]
+
+=== Reactive
+==== Unterscheidung
+Das Wort `Reactive` wird mittlerweile mit sehr vielen unterschiedlichen Konzepten assoziiert. In Bezug auf `Mutiny` steht der Begriff `Reactive` für https://smallrye.io/smallrye-mutiny/latest/reference/what-is-reactive-programming/[Reactive Programming]. Nicht zu verwechseln mit der https://quarkus.io/guides/quarkus-reactive-architecture#what-is-reactive[reaktiven Architektur] von Quarkus. Die Konzepte eines `Reaktiven Systems` und `Reaktiver Programmierung` arbeiten zwar im Falle von `Quarkus` eng zusammen, sind aber nicht dasselbe.
+
+==== Was ist reaktives Programmieren?
+[quote, smallrye.io, What is Reactive Programming?]
+____
+Reactive programming is about programming with data streams.
+____
+
+Im Mittelpunkt der *reaktiven Programmierung* stehen *Datenströme* und deren *Beobachtung*. Bei der reaktiven Programmierung definieren wir *was passiert*, wenn wir etwas in unserem Datenstrom beobachten.
+
+Reaktives Programmieren ist von Natur aus *asynchron*, da der Zeitpunkt, wann welche Daten im Datenstrom gesehen werden nicht bekannt ist.
+
+[cols="a,a"]
+|===
+| image::rp-streams-fail.png[]
+| image::rp-streams-complete.png[]
+|===
+
+*Mutiny* unterstützt das Erstellen solcher Datenströme und das Verarbeiten von der durch die Beobachtung aufkommenden *Events*.
+
+=== Event-driven
+Neben *Datenströmen* sind *Events* (Ereignisse) eine weitere Kernkomponente von Mutiny. Ereignisse, informieren Beobachter über neue Daten im Strom, welche anschließend weiterarbeitet werden können.
+
+== Warum Mutiny und nicht <insert-reactive-library-here>?
+* `Mutiny` ist die primäre API für reaktive Quarkus Applikationen.
+* Laut der `Mutiny` https://smallrye.io/smallrye-mutiny/latest/reference/what-makes-mutiny-different/#what-makes-mutiny-different[Dokumentation]:
+** Anfängerfreundlicher als die Alternativen
+*** Programmierung benötigt keine fortgeschrittenen Programmierkenntnisse
+*** Leichter zu verstehen
+** Auch nach 6 Monaten Programmierpause noch lesbar
+** Leichtgewichtiger
+*** Weniger LinesOfCode (LOC)
+*** Weniger Files
+
+// Achtung werbeveranstaltung
+// Ich würde gerne mehr dazu sagen, aber man findet kaum etwas dazu
+// Interface:
+// - Event-Driven: Munity.
+// - Functional: RxJava, Project Reactor
+// Persönliche Meinung zu Mutiny: die Lernkurve zu Beginn ist schon sehr steil
+
+== Alternativen (in der Java Welt)
+* https://github.com/ReactiveX/RxJava[RxJava]
+** Wird Häufig für *Android* Applikationen verwendet
+* https://github.com/reactor/reactor-core[Project Reactor]
+** Primäre Bibliothek für Java *Spring* Applikationen
+
+*RxJava* und *Project Reactor* sind sich sehr ähnlich.
+
+== Events und Pipelines
+Als Nutzer/in von Mutiny erstellt man *Pipelines*, durch die die Events "fließen". Eine *Pipeline* ist eine *Menge von Verarbeitungsschritten*, die vom Programmierer definiert werden. +
+Grundsätzlich "fließen" Events von Quellen (*sources*) zu Senken (*sinks*). +
+Events werden von *Publishern* "veröffentlicht" und am Ende der Pipeline von *Subscribern* konsumiert.
+
+image::pp-ev-example.png[]
+
+Insgesamt gibt es *drei* wichtige Arten von Events, die von *Publishern* zu *Subscribern* "fließen":
+
+* *Items*: Events, die einen gewissen Wert beinhalten.
+* *Completion*: Signalisiert, dass keine weiteren Werte veröffentlicht werden.
+* *Failure*: Fehler bei der Quelle. Es können keine weiteren Werte veröffentlicht werden.
+
+CAUTION: Eine Quelle veröffentlicht nur dann Events, wenn sie von einem *Subscriber* abonniert wurde. Ohne Subscriber wird kein Code ausgeführt.
+
+== Uni and Multi (Event-Sources)
+Mutiny definiert zwei reaktive Datentypen:
+
+* `Uni<T>`: Repräsentiert einen der entweder ein *Item* oder eine *Failure* liefert.
+* `Multi<T>`: Repräsentiert einen Datenstrom der *0 bis n*, möglicherweise unlimitiert viele *Items* liefert.
+
+Sowohl `Uni<T>` als auch `Multi<T>` sind asynchrone Datentypen. Sie beobachten und veröffentlichen Events zu beliebigen Zeitpunkten.
+
+== Codebeispiele
+// TODO
+
+== Glossar:
+* *Mutiny*
+** Deutsch: Meuterei
+*** gemeinsame Auflehnung gegen jemanden oder etwas
+** In Bezug auf Quarkus:
+*** "The Mutiny name comes from the contraction of Multi and Uni names"
+*** Möglicherweise soll es auch eine Rebellion (ein Aufstand) gegen traditionelle, synchrone bzw. asynchrone Programmierweisen darstellen
+* *Primär*: An erster Stelle stehend.
+** In Bezug auf Quarkus: Mutiny ist primär im Sinne von: Support für Mutiny wird priorisiert.
+* *Mere mortals*: Normalsterbliche
+* *Java Spring*: Konkurrenzprodukt zu Quarkus
+* *Event*: Ereignis
+* *Sequenziell*: Hintereinander
+* *I/O Operation*:
+** Unter *I/O* versteht man die Kommunikation einer Applikation mit ihrer Außenwelt.
+* *Subscribe*: Abonnieren
+** für den fortlaufenden Bezug bestellt
+* *Repräsentieren*: etwas, nach außen vertreten
 
 == Quellen
-*
+* https://quarkus.io/guides/mutiny-primer
+* https://smallrye.io/smallrye-mutiny/latest/reference/why-is-asynchronous-important/
+* https://www.retit.de/investigating-the-performance-of-reactive-libraries-in-a-quarkus-microservice/
+* https://www.reddit.com/r/quarkus/comments/1fn1nwz/best_resiurces_to_learn_reactive_programming_with/
+* https://developers.redhat.com/blog/2020/08/07/reactive-quarkus-a-java-mutiny
+* https://medium.com/geekculture/building-a-reactive-polling-mechanism-with-smallrye-mutiny-and-quarkus-f86802653140
+* https://smallrye.io/smallrye-mutiny-zero/latest/
+* https://smallrye.io/smallrye-mutiny/latest/
+* https://gist.github.com/staltz/868e7e9bc2a7b8c1f754
+* https://www.benji.dog/articles/git-config/
+* https://quarkus.io/guides/quarkus-reactive-architecture#engine
+* https://github.com/ReactiveX/RxJava
+* https://projectreactor.io/
+* https://smallrye.io/smallrye-mutiny/latest/reference/what-makes-mutiny-different/#events
+* https://smallrye.io/smallrye-mutiny/latest/reference/what-is-reactive-programming/
+* https://julien.ponge.org/blog/publication-performance-and-costs-of-reactive-programming-libraries-in-java/
+* https://spring.io/reactive
+* https://quarkus.io/blog/mutiny-invoke-and-call/
+* https://www.linkedin.com/pulse/multi-threading-vs-asynchronous-sundar-govindarajan-dlbnc
+* https://www.baeldung.com/cs/async-vs-multi-threading
+* https://stackoverflow.com/questions/34680985/what-is-the-difference-between-asynchronous-programming-and-multithreading
+* https://www.linkedin.com/pulse/multithreading-vs-asynchronous-programming-net-core-mate-abulashvili-9u4ue
+https://smallrye.io/smallrye-mutiny/latest/guides/merging-and-concatenating-streams/
+https://smallrye.io/smallrye-mutiny/latest/guides/emit-on-vs-run-subscription-on/
+https://www.reactivemanifesto.org/
+https://smallrye.io/smallrye-mutiny/latest/reference/going-reactive-a-few-pitfalls/#creating-uni-and-multi-from-in-memory-data-might-be-suspicious
+https://en.wikipedia.org/wiki/Side_effect_(computer_science)
+https://en.wikipedia.org/wiki/Sink_(computing)
+https://smallrye.io/smallrye-mutiny/latest/reference/uni-and-multi/
+https://smallrye.io/smallrye-mutiny/latest/reference/publications/
+https://dl.acm.org/doi/10.1145/3486605.3486788
+https://smallrye.io/smallrye-mutiny/latest/tags-index/#advanced
