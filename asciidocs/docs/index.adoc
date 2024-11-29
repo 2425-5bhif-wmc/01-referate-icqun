@@ -152,8 +152,27 @@ Mutiny definiert zwei reaktive Datentypen:
 
 Sowohl `Uni<T>` als auch `Multi<T>` sind asynchrone Datentypen. Sie beobachten und veröffentlichen Events zu beliebigen Zeitpunkten.
 
-== Codebeispiele
-// TODO
+== Demo
+.Projekt erstellen
+[source, shell]
+----
+mvn io.quarkus.platform:quarkus-maven-plugin:3.17.0:create \
+    -DprojectGroupId=at.htl \
+    -DprojectArtifactId=mutiny-demo \
+    -Dextensions='rest-jackson, quarkus-hibernate-reactive-panache, quarkus-reactive-pg-client, smallrye-openapi'
+cd mutiny-demo
+----
+
+.application.properties
+[source, properties]
+----
+quarkus.datasource.db-kind = postgresql
+quarkus.datasource.username = app
+quarkus.datasource.password = app
+quarkus.datasource.reactive.url = vertx-reactive:postgresql://localhost:5432/db
+
+%dev.quarkus.hibernate-orm.database.generation=drop-and-create
+----
 
 == Glossar:
 * *Mutiny*

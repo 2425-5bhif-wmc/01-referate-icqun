@@ -1,0 +1,23 @@
+services:
+  db:
+    container_name: postgres
+    image: postgres:17.1-alpine3.20
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: app
+      POSTGRES_PASSWORD: app
+      POSTGRES_DB: db
+    ports:
+      - 5432:5432
+    volumes:
+      - ./db-postgres/db:/var/lib/postgresql/data
+      - ./db-postgres/import:/import
+    networks:
+      - postgres
+networks:
+  postgres:
+    driver: bridge
+    ipam:
+      driver: default
+      config:
+        - subnet: 10.1.0.0/24
