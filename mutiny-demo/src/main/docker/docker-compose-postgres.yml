@@ -17,7 +17,3 @@ services:
 networks:
   postgres:
     driver: bridge
-    ipam:
-      driver: default
-      config:
-        - subnet: 10.1.0.0/24
