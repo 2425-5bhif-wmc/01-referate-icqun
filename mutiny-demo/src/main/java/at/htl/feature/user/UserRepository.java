@@ -1,4 +1,4 @@
-package at.htl.feature;
+package at.htl.feature.user;
 
 import io.quarkus.hibernate.reactive.panache.PanacheRepository;
 import jakarta.enterprise.context.ApplicationScoped;

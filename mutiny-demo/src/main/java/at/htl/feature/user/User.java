@@ -1,4 +1,4 @@
-package at.htl.feature;
+package at.htl.feature.user;
 
 import jakarta.persistence.*;
 

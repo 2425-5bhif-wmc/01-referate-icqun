@@ -174,6 +174,8 @@ quarkus.datasource.reactive.url = vertx-reactive:postgresql://localhost:5432/db
 %dev.quarkus.hibernate-orm.database.generation=drop-and-create
 ----
 
+
+
 == Glossar:
 * *Mutiny*
 ** Deutsch: Meuterei
