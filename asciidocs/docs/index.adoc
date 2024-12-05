@@ -490,4 +490,7 @@ include::../../mutiny-demo/src/main/java/at/htl/feature/user/UserResource.java[]
 * https://smallrye.io/smallrye-mutiny/latest/reference/publications/
 * https://dl.acm.org/doi/10.1145/3486605.3486788
 * https://smallrye.io/smallrye-mutiny/latest/tags-index/#advanced
+* https://raw.githubusercontent.com/alexmchale/merc-mud/refs/heads/master/doc/hacker.txt
+* https://de.wikipedia.org/wiki/Imperative_Programmierung
+* https://quarkus.io/guides/hibernate-reactive-panache
 * https://inria.hal.science/hal-03409277/file/paper-author-version.pdf
