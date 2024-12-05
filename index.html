@@ -565,7 +565,7 @@ pre.rouge .gs {
 <div class="details">
 <span id="author" class="author">Julian Schludermann</span><br>
 <span id="revnumber">version 1.0,</span>
-<span id="revdate">2024-11-29</span>
+<span id="revdate">2024-12-05</span>
 </div>
 <div id="toc" class="toc2">
 <div id="toctitle">Table of Contents</div>
@@ -581,9 +581,31 @@ pre.rouge .gs {
 <li><a href="#_alternativen_in_der_java_welt">3. Alternativen (in der Java Welt)</a></li>
 <li><a href="#_events_und_pipelines">4. Events und Pipelines</a></li>
 <li><a href="#_uni_and_multi_event_sources">5. Uni and Multi (Event-Sources)</a></li>
-<li><a href="#_demo">6. Demo</a></li>
-<li><a href="#_glossar">7. Glossar:</a></li>
-<li><a href="#_quellen">8. Quellen</a></li>
+<li><a href="#_codebeispiel_für_pipelines">6. Codebeispiel für Pipelines</a></li>
+<li><a href="#_nützliche_funktionen">7. Nützliche Funktionen</a>
+<ul class="sectlevel2">
+<li><a href="#_items">7.1. Items</a></li>
+<li><a href="#_failures">7.2. Failures</a></li>
+</ul>
+</li>
+<li><a href="#_codevergleich_reaktiv_vs_imperativ">8. Codevergleich: reaktiv vs imperativ</a>
+<ul class="sectlevel2">
+<li><a href="#_getbyid">8.1. GetById</a></li>
+<li><a href="#_createuser">8.2. CreateUser</a></li>
+</ul>
+</li>
+<li><a href="#_anwendungsfälle_von_reaktivem_programmieren">9. Anwendungsfälle von reaktivem Programmieren</a></li>
+<li><a href="#_warum_reaktives_programmieren_in_franklyn_eingesetzt_wird">10. Warum reaktives Programmieren in Franklyn eingesetzt wird</a></li>
+<li><a href="#_demos">11. Demos</a>
+<ul class="sectlevel3">
+<li><a href="#_unterschied_classic_vs_mutiny">11.1. Unterschied classic vs mutiny</a></li>
+<li><a href="#_classic_imperativ">11.2. Classic (Imperativ)</a></li>
+<li><a href="#_mutiny_reaktiv">11.3. Mutiny (Reaktiv)</a></li>
+</ul>
+</li>
+<li><a href="#_bonus_franklyn">12. Bonus: Franklyn</a></li>
+<li><a href="#_glossar">13. Glossar</a></li>
+<li><a href="#_quellen">14. Quellen</a></li>
 </ul>
 </div>
 </div>
@@ -819,7 +841,7 @@ pre.rouge .gs {
 <p>Auch nach 6 Monaten Programmierpause noch lesbar</p>
 </li>
 <li>
-<p>Leichtgewichtiger</p>
+<p>Library Sourcecode leichtgewichtiger</p>
 <div class="ulist">
 <ul>
 <li>
@@ -875,7 +897,7 @@ pre.rouge .gs {
 <div class="sectionbody">
 <div class="paragraph">
 <p>Als Nutzer/in von Mutiny erstellt man <strong>Pipelines</strong>, durch die die Events "fließen". Eine <strong>Pipeline</strong> ist eine <strong>Menge von Verarbeitungsschritten</strong>, die vom Programmierer definiert werden.<br>
-Grundsätzlich "fließen" Events von Quellen (<strong>sources</strong>) zu Senken (<strong>sinks</strong>).<br>
+Grundsätzlich "fließen" Events von Quellen (<strong>sources</strong>) zu bis zu ihrem Ziel (<strong>sinks</strong>).<br>
 Events werden von <strong>Publishern</strong> "veröffentlicht" und am Ende der Pipeline von <strong>Subscribern</strong> konsumiert.</p>
 </div>
 <div class="imageblock">
@@ -935,33 +957,546 @@ Eine Quelle veröffentlicht nur dann Events, wenn sie von einem <strong>Subscrib
 </div>
 </div>
 <div class="sect1">
-<h2 id="_demo"><a class="anchor" href="#_demo"></a>6. Demo</h2>
+<h2 id="_codebeispiel_für_pipelines"><a class="anchor" href="#_codebeispiel_für_pipelines"></a>6. Codebeispiel für Pipelines</h2>
 <div class="sectionbody">
+<div class="listingblock">
+<div class="title">Reaktiver get by ID REST Endpunkt</div>
+<div class="content">
+<pre class="rouge highlight"><code data-lang="java"><span class="nc">Unresolved</span> <span class="n">directive</span> <span class="n">in</span> <span class="n">index</span><span class="o">.</span><span class="na">adoc</span> <span class="o">-</span> <span class="nl">include:</span><span class="o">:../../</span><span class="n">mutiny</span><span class="o">-</span><span class="n">demo</span><span class="o">/</span><span class="n">src</span><span class="o">/</span><span class="n">main</span><span class="o">/</span><span class="n">java</span><span class="o">/</span><span class="n">at</span><span class="o">/</span><span class="n">htl</span><span class="o">/</span><span class="n">feature</span><span class="o">/</span><span class="n">user</span><span class="o">/</span><span class="nc">UserResource</span><span class="o">.</span><span class="na">java</span><span class="o">[</span><span class="n">tag</span><span class="o">=</span><span class="n">get_simple</span><span class="o">]</span></code></pre>
+</div>
+</div>
+<details>
+<summary class="title">Erklärung</summary>
+<div class="content">
+<div class="colist arabic">
+<table>
+<tr>
+<td><i class="conum" data-value="1"></i><b>1</b></td>
+<td>Startet eine reaktive <code>Session</code> für die Methode. Ohne Session können keine Datenbankzugriffe durchgeführt werden. Vergleichbar mit der klassischen (blockierenden) <code>org.Hibernate.Session</code> / <code>Entity Manager</code>. Die <code>Session</code> ermöglicht es uns unter anderem <code>CRUD</code> Operationen mit unseren Entitäten durchzuführen.</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="2"></i><b>2</b></td>
+<td>Der Rückgabewert der Funktion ist nicht wie bei herkömmlichen synchronen Funktionen <code>Response</code> sondern <code>Uni&lt;Response&gt;</code>. Wir geben hier eine Eventquelle zurück, die "verspricht" <strong>genau eine Response</strong> oder <strong>eine Failure</strong> zu veröffentlichen.</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="3"></i><b>3</b></td>
+<td>In diesem Fall ist unsere Eventquelle der Aufruf des PanacheRepositories <code>findById</code>. Dieser gibt einen <code>Uni&lt;User&gt;</code> zurück, verspricht also genau einen Benutzer oder einen Fehler zurückzugeben.</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="4"></i><b>4</b></td>
+<td>Mit <code>onItem().transform()</code> fügen wir einen zusätzlichen Verarbeitungsschritt in unserer <code>Pipeline</code> hinzu. In diesem Fall wird unsere <code>User</code> Entität zu einem <code>UserDto</code> umgewandelt. Das Item, das das Event mit sich trägt, wird durch <code>transform</code> also durch ein neues ersetzt. Das Ergebnis wird wieder in den Datenstrom gegeben.</td>
+</tr>
+</table>
+</div>
+</div>
+</details>
+<div class="imageblock">
+<div class="content">
+<img src="images/get-by-id-pipeline.png" alt="get by id pipeline">
+</div>
+</div>
+<div class="listingblock">
+<div class="title">Reaktiver createUser REST Endpunkt</div>
+<div class="content">
+<pre class="rouge highlight"><code data-lang="java"><span class="nc">Unresolved</span> <span class="n">directive</span> <span class="n">in</span> <span class="n">index</span><span class="o">.</span><span class="na">adoc</span> <span class="o">-</span> <span class="nl">include:</span><span class="o">:../../</span><span class="n">mutiny</span><span class="o">-</span><span class="n">demo</span><span class="o">/</span><span class="n">src</span><span class="o">/</span><span class="n">main</span><span class="o">/</span><span class="n">java</span><span class="o">/</span><span class="n">at</span><span class="o">/</span><span class="n">htl</span><span class="o">/</span><span class="n">feature</span><span class="o">/</span><span class="n">user</span><span class="o">/</span><span class="nc">UserResource</span><span class="o">.</span><span class="na">java</span><span class="o">[</span><span class="n">tag</span><span class="o">=</span><span class="n">create</span><span class="o">]</span></code></pre>
+</div>
+</div>
+<details>
+<summary class="title">Erklärung</summary>
+<div class="content">
+<div class="colist arabic">
+<table>
+<tr>
+<td><i class="conum" data-value="1"></i><b>1</b></td>
+<td><code>@WithTransaction</code> ist in das reaktive Equivalent zu <code>@Transactional</code></td>
+</tr>
+<tr>
+<td><i class="conum" data-value="2"></i><b>2</b></td>
+<td>Der Rückgabewert der Funktion ist nicht wie bei herkömmlichen synchronen Funktionen <code>Response</code> sondern <code>Uni&lt;Response&gt;</code>. Wir geben hier eine Eventquelle zurück, die "verspricht" <strong>genau eine Response</strong> oder <strong>eine Failure</strong> zu veröffentlichen.</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="3"></i><b>3</b></td>
+<td>Hier erstellen wir unseren Datenstrom mit einem <strong>Item</strong>. In diesem Fall ist das das User-Objekt, welches wir erhalten haben.</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="4"></i><b>4</b></td>
+<td>Mit <strong>onItem</strong> horchen wir auf das <strong>Item</strong> Event des Streams. Erhalten wir ein <strong>Null-Item</strong> so erstellen wir ein neues <strong>Failure</strong> Event, welches eine <code>WebApplicationException</code> trägt</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="5"></i><b>5</b></td>
+<td>Erhalten wir <strong>kein</strong> <strong>Null-Item</strong>, transformieren wir unser <strong>Item-Event</strong>. Wir persistieren das mitgegebene User-Objekt. Der Repository aufruf gibt erneut einen <code>Uni&lt;T&gt;</code> zurück. Mit <code>transformToUni</code> transformieren wir das Event in Datenstrom mit einer asynchronen Funktion. Das Event, welches vom zurückgegebenen <code>Uni</code> produziert wird, wird in den Datenfluss gegeben.</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="6"></i><b>6</b></td>
+<td>Im letzten Schritt transformieren wir unseren <code>Uni</code> erneut, aber dieses Mal mit <code>transform</code>. Hier wird nicht der Datenstrom, sondern das Item im Datenstrom ersetzt. Aus dem User (<code>Uni&lt;User&gt;</code>) wird eine Response. (<code>Uni&lt;Response&gt;</code>)</td>
+</tr>
+</table>
+</div>
+</div>
+</details>
+<div class="imageblock">
+<div class="content">
+<img src="images/create-new-pipeline.png" alt="create new pipeline">
+</div>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_nützliche_funktionen"><a class="anchor" href="#_nützliche_funktionen"></a>7. Nützliche Funktionen</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>In den vorangehenden Beispielen wurden bereits einige nützliche Funktionen verwenden. Nachfolgenden werden diese genauer erklärt und erweitert.</p>
+</div>
+<div class="paragraph">
+<p><code>on{event}()</code> erlaubt es auf verschiedene Events zu achten. Auf <code>onItem()</code> und <code>onFailure()</code> wird in den folgenden Abschnitten genauer eingegangen.</p>
+</div>
+<div class="sect2">
+<h3 id="_items"><a class="anchor" href="#_items"></a>7.1. Items</h3>
+<div class="paragraph">
+<p><code>onItem()</code></p>
+</div>
+<table class="tableblock frame-all grid-all stretch">
+<colgroup>
+<col style="width: 50%;">
+<col style="width: 50%;">
+</colgroup>
+<tbody>
+<tr>
+<td class="tableblock halign-left valign-top"><div class="content"><div class="paragraph">
+<p><code>.transform(Function&lt;T, R&gt; mapper)</code></p>
+</div></div></td>
+<td class="tableblock halign-left valign-top"><div class="content"><div class="paragraph">
+<p>Vergleichbar mit Java streams <code>map</code>. Transformiert das im Event enthaltene Item vom Typ <code>T</code> und emittiert schließlich das neue Item vom Typ <code>R</code>.</p>
+</div></div></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><div class="content"><div class="paragraph">
+<p><code>.transformToUni(Function&lt;T, Uni&lt;R&gt;&gt; mapper)</code></p>
+</div></div></td>
+<td class="tableblock halign-left valign-top"><div class="content"><div class="paragraph">
+<p>Wandelt das im Event enthaltene Item vom Typ <code>T</code> mithilfe einer asynchronen Funktion in den Typen <code>R</code> um. Das vom zurückgegebenen Uni&lt;R&gt; emittierte Event wird schließlich weitergereicht.</p>
+</div></div></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><div class="content"><div class="paragraph">
+<p><code>.invoke(Consumer&lt;T&gt; consumer)</code></p>
+</div></div></td>
+<td class="tableblock halign-left valign-top"><div class="content"><div class="paragraph">
+<p>Führt den Consumer <code>consumer</code> aus und übergibt ihm das derzeitige Item. Das Event bleibt unverändert und wird nach der Ausführung des Consumers weitergereicht.</p>
+</div></div></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><div class="content"><div class="paragraph">
+<p><code>.call(Function&lt;T,Uni&lt;&gt;&gt; consumer)</code></p>
+</div></div></td>
+<td class="tableblock halign-left valign-top"><div class="content"><div class="paragraph">
+<p>Sehr ähnlich zu <code>.invoke()</code>, mit dem Unterschied, dass der ausgeführte Consumer asynchron ausgeführt wird. Das Event bleibt erneut unverändert.</p>
+</div></div></td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="sect2">
+<h3 id="_failures"><a class="anchor" href="#_failures"></a>7.2. Failures</h3>
+<div class="paragraph">
+<p><code>onFailure()</code></p>
+</div>
+<table class="tableblock frame-all grid-all stretch">
+<colgroup>
+<col style="width: 50%;">
+<col style="width: 50%;">
+</colgroup>
+<tbody>
+<tr>
+<td class="tableblock halign-left valign-top"><div class="content"><div class="paragraph">
+<p><code>.recoverWithItem(T item)</code></p>
+</div></div></td>
+<td class="tableblock halign-left valign-top"><div class="content"><div class="paragraph">
+<p>Wandelt das <code>Failure</code> Event in ein <code>Item</code> Event mit dem Inhalt <code>item</code> um und reicht das neue Event weiter.</p>
+</div></div></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><div class="content"><div class="paragraph">
+<p><code>.retry().atMost(long attempts)</code></p>
+</div></div></td>
+<td class="tableblock halign-left valign-top"><div class="content"><div class="paragraph">
+<p>Versucht die fehlgeschlagene Aktion noch einmal auszuführen. Sollte diese mehrfach fehlschlagen wird sie maximal <code>attempts</code>-Mal ausgeführt.</p>
+</div></div></td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_codevergleich_reaktiv_vs_imperativ"><a class="anchor" href="#_codevergleich_reaktiv_vs_imperativ"></a>8. Codevergleich: reaktiv vs imperativ</h2>
+<div class="sectionbody">
+<style>
+    .hide-callouts .conum {
+        display: none;
+    }
+</style>
+<div class="sect2">
+<h3 id="_getbyid"><a class="anchor" href="#_getbyid"></a>8.1. GetById</h3>
+<table class="tableblock frame-all grid-all stretch">
+<colgroup>
+<col style="width: 100%;">
+</colgroup>
+<tbody>
+<tr>
+<td class="tableblock halign-left valign-top"><div class="content"><div class="paragraph">
+<p>Reaktiv</p>
+</div></div></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><div class="content"><div class="listingblock hide-callouts">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="java"><span class="nc">Unresolved</span> <span class="n">directive</span> <span class="n">in</span> <span class="n">index</span><span class="o">.</span><span class="na">adoc</span> <span class="o">-</span> <span class="nl">include:</span><span class="o">:../../</span><span class="n">mutiny</span><span class="o">-</span><span class="n">demo</span><span class="o">/</span><span class="n">src</span><span class="o">/</span><span class="n">main</span><span class="o">/</span><span class="n">java</span><span class="o">/</span><span class="n">at</span><span class="o">/</span><span class="n">htl</span><span class="o">/</span><span class="n">feature</span><span class="o">/</span><span class="n">user</span><span class="o">/</span><span class="nc">UserResource</span><span class="o">.</span><span class="na">java</span><span class="o">[</span><span class="n">tag</span><span class="o">=</span><span class="n">get_simple</span><span class="o">]</span></code></pre>
+</div>
+</div></div></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><div class="content"><div class="paragraph">
+<p>Imperativ</p>
+</div></div></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><div class="content"><div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="java"><span class="nc">Unresolved</span> <span class="n">directive</span> <span class="n">in</span> <span class="n">index</span><span class="o">.</span><span class="na">adoc</span> <span class="o">-</span> <span class="nl">include:</span><span class="o">:../../</span><span class="n">classic</span><span class="o">-</span><span class="n">demo</span><span class="o">/</span><span class="n">src</span><span class="o">/</span><span class="n">main</span><span class="o">/</span><span class="n">java</span><span class="o">/</span><span class="n">at</span><span class="o">/</span><span class="n">htl</span><span class="o">/</span><span class="n">feature</span><span class="o">/</span><span class="n">user</span><span class="o">/</span><span class="nc">UserResource</span><span class="o">.</span><span class="na">java</span><span class="o">[</span><span class="n">tag</span><span class="o">=</span><span class="n">get_simple_classic</span><span class="o">]</span></code></pre>
+</div>
+</div></div></td>
+</tr>
+</tbody>
+</table>
+<div class="paragraph">
+<p>Sowohl die imperative als auch reaktive Version des <code>getById</code>-Endpunkts sind relativ kompakt und übersichtlich.</p>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_createuser"><a class="anchor" href="#_createuser"></a>8.2. CreateUser</h3>
+<table class="tableblock frame-all grid-all stretch">
+<colgroup>
+<col style="width: 100%;">
+</colgroup>
+<tbody>
+<tr>
+<td class="tableblock halign-left valign-top"><div class="content"><div class="paragraph">
+<p>Reaktiv</p>
+</div></div></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><div class="content"><div class="listingblock hide-callouts">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="java"><span class="nc">Unresolved</span> <span class="n">directive</span> <span class="n">in</span> <span class="n">index</span><span class="o">.</span><span class="na">adoc</span> <span class="o">-</span> <span class="nl">include:</span><span class="o">:../../</span><span class="n">mutiny</span><span class="o">-</span><span class="n">demo</span><span class="o">/</span><span class="n">src</span><span class="o">/</span><span class="n">main</span><span class="o">/</span><span class="n">java</span><span class="o">/</span><span class="n">at</span><span class="o">/</span><span class="n">htl</span><span class="o">/</span><span class="n">feature</span><span class="o">/</span><span class="n">user</span><span class="o">/</span><span class="nc">UserResource</span><span class="o">.</span><span class="na">java</span><span class="o">[</span><span class="n">tag</span><span class="o">=</span><span class="n">create</span><span class="o">]</span></code></pre>
+</div>
+</div></div></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><div class="content"><div class="paragraph">
+<p>Imperativ</p>
+</div></div></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><div class="content"><div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="java"><span class="nc">Unresolved</span> <span class="n">directive</span> <span class="n">in</span> <span class="n">index</span><span class="o">.</span><span class="na">adoc</span> <span class="o">-</span> <span class="nl">include:</span><span class="o">:../../</span><span class="n">classic</span><span class="o">-</span><span class="n">demo</span><span class="o">/</span><span class="n">src</span><span class="o">/</span><span class="n">main</span><span class="o">/</span><span class="n">java</span><span class="o">/</span><span class="n">at</span><span class="o">/</span><span class="n">htl</span><span class="o">/</span><span class="n">feature</span><span class="o">/</span><span class="n">user</span><span class="o">/</span><span class="nc">UserResource</span><span class="o">.</span><span class="na">java</span><span class="o">[</span><span class="n">tag</span><span class="o">=</span><span class="n">create_classic</span><span class="o">]</span></code></pre>
+</div>
+</div></div></td>
+</tr>
+</tbody>
+</table>
+<div class="paragraph">
+<p>Obwohl durch die reaktive Variante nur ein einziger blockierender Aufruf verhindert wird, ist sie schon etwas länger und definitiv komplizierter.</p>
+</div>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_anwendungsfälle_von_reaktivem_programmieren"><a class="anchor" href="#_anwendungsfälle_von_reaktivem_programmieren"></a>9. Anwendungsfälle von reaktivem Programmieren</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>Mutiny beziehungsweise reaktives Programmieren im Allgemeinen, ist kein "Wundermittel". Es gibt Anwendungsfälle, bei denen reaktives Programmieren <strong>keine</strong> Vorteile mit sich bringt oder sogar Nachteile.</p>
+</div>
+<div class="paragraph">
+<p><strong>Reaktives Programmieren</strong> ist in Fällen in denen</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p><strong>viele I/O Operationen</strong> ausgeführt</p>
+</li>
+<li>
+<p>und/oder <strong>eine große Menge an Anfragen gleichzeitig</strong> verarbeitet</p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p>werden müssen <strong>vorteilhaft</strong>. (<em>I/O Bound</em> Tasks)</p>
+</div>
+<div class="paragraph">
+<p><strong>Imperatives Programmieren</strong> ist in Fällen in denen</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p><strong>Daten im Hauptspeicher</strong> verarbeitet</p>
+</li>
+<li>
+<p>und <strong>wenig bis keine I/O Operationen</strong> durchgeführt</p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p>werden müssen <strong>vorteilhaft</strong>. (<em>CPU Bound</em> Tasks)</p>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_warum_reaktives_programmieren_in_franklyn_eingesetzt_wird"><a class="anchor" href="#_warum_reaktives_programmieren_in_franklyn_eingesetzt_wird"></a>10. Warum reaktives Programmieren in Franklyn eingesetzt wird</h2>
+<div class="sectionbody">
+<div class="ulist">
+<ul>
+<li>
+<p>Massenweise I/O Operationen</p>
+<div class="ulist">
+<ul>
+<li>
+<p>Screenshot speichern/laden (Datenbank + Filesystem)</p>
+</li>
+<li>
+<p>Regelmäßiges speichern vom Verbindungszustand (Datenbank)</p>
+</li>
+<li>
+<p>Exam CRUD Operationen</p>
+</li>
+</ul>
+</div>
+</li>
+<li>
+<p>Große Mengen an Anfragen während Tests</p>
+<div class="ulist">
+<ul>
+<li>
+<p>Dauerhafte Kommunikation mit 20 - 30 Schüler:innen pro Test</p>
+</li>
+<li>
+<p>Regelmäßige Screenshot-uploads</p>
+</li>
+</ul>
+</div>
+</li>
+</ul>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_demos"><a class="anchor" href="#_demos"></a>11. Demos</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>Im <a href="https://github.com/2425-5bhif-wmc/01-referate-icqun">Repository</a> sind neben der Dokumentation auch noch 2 Demoprojekte aufzufinden:</p>
+</div>
+<div class="imageblock">
+<div class="content">
+<img src="images/demo-projects.png" alt="demo projects">
+</div>
+</div>
+<div class="paragraph">
+<p>Beide Projekte implementieren einen kleinen REST-Service, mit einem <code>User</code> Endpunkt, welcher <code>create</code> und <code>read</code> Operationen zur Verfügung stellt.
+Die erstellten Nutzer werden in der Datenbank gespeichert. Bei <code>read</code> Operationen wird das um einige "sensible" Daten reduzierte <code>UserDto</code> zurückgeliefert.</p>
+</div>
+<div class="paragraph">
+<p><strong>Klassen</strong></p>
+</div>
+<div class="imageblock">
+<div class="content">
+<img src="images/demo-feature.png" alt="demo feature">
+</div>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p><code>User</code>: User Entität, die in der Datenbank gespeichert wird</p>
+</li>
+<li>
+<p><code>UserDto</code>: User ohne "sensible" Daten (DateOfBirth, Adresse)</p>
+</li>
+<li>
+<p><code>UserRepository</code>: Panache repository für Datenbankzugriffe</p>
+</li>
+<li>
+<p><code>UserResource</code>: REST Endpunkte für <code>read</code> und <code>create</code></p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p>Die <code>User</code> und <code>UserDto</code> Klassen sind für beide Projekte gleich:</p>
+</div>
+<details>
+<summary class="title">User</summary>
+<div class="content">
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="java"><span class="nc">Unresolved</span> <span class="n">directive</span> <span class="n">in</span> <span class="n">index</span><span class="o">.</span><span class="na">adoc</span> <span class="o">-</span> <span class="nl">include:</span><span class="o">:../../</span><span class="n">mutiny</span><span class="o">-</span><span class="n">demo</span><span class="o">/</span><span class="n">src</span><span class="o">/</span><span class="n">main</span><span class="o">/</span><span class="n">java</span><span class="o">/</span><span class="n">at</span><span class="o">/</span><span class="n">htl</span><span class="o">/</span><span class="n">feature</span><span class="o">/</span><span class="n">user</span><span class="o">/</span><span class="nc">User</span><span class="o">.</span><span class="na">java</span><span class="o">[]</span></code></pre>
+</div>
+</div>
+</div>
+</details>
+<details>
+<summary class="title">UserDto</summary>
+<div class="content">
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="java"><span class="nc">Unresolved</span> <span class="n">directive</span> <span class="n">in</span> <span class="n">index</span><span class="o">.</span><span class="na">adoc</span> <span class="o">-</span> <span class="nl">include:</span><span class="o">:../../</span><span class="n">mutiny</span><span class="o">-</span><span class="n">demo</span><span class="o">/</span><span class="n">src</span><span class="o">/</span><span class="n">main</span><span class="o">/</span><span class="n">java</span><span class="o">/</span><span class="n">at</span><span class="o">/</span><span class="n">htl</span><span class="o">/</span><span class="n">feature</span><span class="o">/</span><span class="n">user</span><span class="o">/</span><span class="nc">UserDto</span><span class="o">.</span><span class="na">java</span><span class="o">[]</span></code></pre>
+</div>
+</div>
+</div>
+</details>
+<div class="sect3">
+<h4 id="_unterschied_classic_vs_mutiny"><a class="anchor" href="#_unterschied_classic_vs_mutiny"></a>11.1. Unterschied classic vs mutiny</h4>
+<div class="ulist">
+<ul>
+<li>
+<p><strong>classic-demo</strong>: Implementierung der REST Endpunkte ist durch "klassische" blockierende Datenbankzugriffe umgesetzt.</p>
+</li>
+<li>
+<p><strong>mutiny-demo</strong>: Implementierung der REST Endpunkte mit reaktiven asynchronen Datenbankzugriffen.</p>
+</li>
+</ul>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_classic_imperativ"><a class="anchor" href="#_classic_imperativ"></a>11.2. Classic (Imperativ)</h3>
 <div class="listingblock">
 <div class="title">Projekt erstellen</div>
 <div class="content">
-<pre class="rouge highlight"><code data-lang="shell">mvn io.quarkus.platform:quarkus-maven-plugin:3.17.0:create <span class="se">\</span>
+<pre class="rouge highlight"><code data-lang="shell">mvn io.quarkus.platform:quarkus-maven-plugin:3.17.3:create <span class="se">\</span>
+    <span class="nt">-DprojectGroupId</span><span class="o">=</span>at.htl <span class="se">\</span>
+    <span class="nt">-DprojectArtifactId</span><span class="o">=</span>classic-demo <span class="se">\</span>
+    <span class="nt">-Dextensions</span><span class="o">=</span><span class="s1">'rest-jackson, quarkus-hibernate-orm-panache, quarkus-jdbc-postgresql, smallrye-openapi'</span>
+<span class="nb">cd </span>classic-demo</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Für die imperative Implementierung werden</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p><code>quarkus-hibernate-orm-panache</code></p>
+</li>
+<li>
+<p>und <code>quarkus-jdbc-postgresql</code></p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p>für als Bibliotheken für Datenbankzugriffe verwendet.</p>
+</div>
+<div class="listingblock">
+<div class="title">application.properties</div>
+<div class="content">
+<pre class="rouge highlight"><code data-lang="properties"><span class="err">Unresolved</span> <span class="err">directive</span> <span class="err">in</span> <span class="err">index.adoc</span> <span class="err">-</span> <span class="py">include</span><span class="p">:</span><span class="s">:../../classic-demo/src/main/resources/application.properties[]</span></code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>In den <code>application.properties</code> wird hier ein <code>jdbc</code> connection string verwendet. Sonst unterscheidet sich die Konfigurationsdatei nicht von der reaktiven Variante.</p>
+</div>
+<div class="paragraph">
+<p><code>UserRepository</code> und <code>UserResource</code> sind wie folgt implementiert:</p>
+</div>
+<details>
+<summary class="title">UserRepository</summary>
+<div class="content">
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="java"><span class="nc">Unresolved</span> <span class="n">directive</span> <span class="n">in</span> <span class="n">index</span><span class="o">.</span><span class="na">adoc</span> <span class="o">-</span> <span class="nl">include:</span><span class="o">:../../</span><span class="n">classic</span><span class="o">-</span><span class="n">demo</span><span class="o">/</span><span class="n">src</span><span class="o">/</span><span class="n">main</span><span class="o">/</span><span class="n">java</span><span class="o">/</span><span class="n">at</span><span class="o">/</span><span class="n">htl</span><span class="o">/</span><span class="n">feature</span><span class="o">/</span><span class="n">user</span><span class="o">/</span><span class="nc">UserRepository</span><span class="o">.</span><span class="na">java</span><span class="o">[]</span></code></pre>
+</div>
+</div>
+</div>
+</details>
+<details>
+<summary class="title">UserResource</summary>
+<div class="content">
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="java"><span class="nc">Unresolved</span> <span class="n">directive</span> <span class="n">in</span> <span class="n">index</span><span class="o">.</span><span class="na">adoc</span> <span class="o">-</span> <span class="nl">include:</span><span class="o">:../../</span><span class="n">classic</span><span class="o">-</span><span class="n">demo</span><span class="o">/</span><span class="n">src</span><span class="o">/</span><span class="n">main</span><span class="o">/</span><span class="n">java</span><span class="o">/</span><span class="n">at</span><span class="o">/</span><span class="n">htl</span><span class="o">/</span><span class="n">feature</span><span class="o">/</span><span class="n">user</span><span class="o">/</span><span class="nc">UserResource</span><span class="o">.</span><span class="na">java</span><span class="o">[]</span></code></pre>
+</div>
+</div>
+</div>
+</details>
+</div>
+<div class="sect2">
+<h3 id="_mutiny_reaktiv"><a class="anchor" href="#_mutiny_reaktiv"></a>11.3. Mutiny (Reaktiv)</h3>
+<div class="listingblock">
+<div class="title">Projekt erstellen</div>
+<div class="content">
+<pre class="rouge highlight"><code data-lang="shell">mvn io.quarkus.platform:quarkus-maven-plugin:3.17.3:create <span class="se">\</span>
     <span class="nt">-DprojectGroupId</span><span class="o">=</span>at.htl <span class="se">\</span>
     <span class="nt">-DprojectArtifactId</span><span class="o">=</span>mutiny-demo <span class="se">\</span>
     <span class="nt">-Dextensions</span><span class="o">=</span><span class="s1">'rest-jackson, quarkus-hibernate-reactive-panache, quarkus-reactive-pg-client, smallrye-openapi'</span>
 <span class="nb">cd </span>mutiny-demo</code></pre>
 </div>
 </div>
+<div class="paragraph">
+<p>Für die reaktive Implementierung werden</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p><code>quarkus-hibernate-reactive-panache</code> (statt <code>quarkus-hibernate-orm-panache</code>)</p>
+</li>
+<li>
+<p>und <code>quarkus-reactive-pg-client</code> (statt <code>quarkus-jdbc-postgresql</code>)</p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p>für als Bibliotheken für Datenbankzugriffe verwendet.</p>
+</div>
 <div class="listingblock">
 <div class="title">application.properties</div>
 <div class="content">
-<pre class="rouge highlight"><code data-lang="properties"><span class="py">quarkus.datasource.db-kind</span> <span class="p">=</span> <span class="s">postgresql</span>
-<span class="py">quarkus.datasource.username</span> <span class="p">=</span> <span class="s">app</span>
-<span class="py">quarkus.datasource.password</span> <span class="p">=</span> <span class="s">app</span>
-<span class="py">quarkus.datasource.reactive.url</span> <span class="p">=</span> <span class="s">vertx-reactive:postgresql://localhost:5432/db</span>
-
-<span class="err">%</span><span class="py">dev.quarkus.hibernate-orm.database.generation</span><span class="p">=</span><span class="s">drop-and-create</span></code></pre>
+<pre class="rouge highlight"><code data-lang="properties"><span class="err">Unresolved</span> <span class="err">directive</span> <span class="err">in</span> <span class="err">index.adoc</span> <span class="err">-</span> <span class="py">include</span><span class="p">:</span><span class="s">:../../mutiny-demo/src/main/resources/application.properties[]</span></code></pre>
 </div>
+</div>
+<div class="paragraph">
+<p>Statt dem <code>jdbc</code> Datenbank Treiber wird für reaktive Datenbankzugriffe der <code>vertx-reactive</code> Treiber verwendet.</p>
+</div>
+<div class="paragraph">
+<p><code>UserRepository</code> und <code>UserResource</code> sind wie folgt implementiert:</p>
+</div>
+<details>
+<summary class="title">UserRepository</summary>
+<div class="content">
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="java"><span class="nc">Unresolved</span> <span class="n">directive</span> <span class="n">in</span> <span class="n">index</span><span class="o">.</span><span class="na">adoc</span> <span class="o">-</span> <span class="nl">include:</span><span class="o">:../../</span><span class="n">mutiny</span><span class="o">-</span><span class="n">demo</span><span class="o">/</span><span class="n">src</span><span class="o">/</span><span class="n">main</span><span class="o">/</span><span class="n">java</span><span class="o">/</span><span class="n">at</span><span class="o">/</span><span class="n">htl</span><span class="o">/</span><span class="n">feature</span><span class="o">/</span><span class="n">user</span><span class="o">/</span><span class="nc">UserRepository</span><span class="o">.</span><span class="na">java</span><span class="o">[]</span></code></pre>
+</div>
+</div>
+</div>
+</details>
+<details>
+<summary class="title">UserResource</summary>
+<div class="content">
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="java"><span class="nc">Unresolved</span> <span class="n">directive</span> <span class="n">in</span> <span class="n">index</span><span class="o">.</span><span class="na">adoc</span> <span class="o">-</span> <span class="nl">include:</span><span class="o">:../../</span><span class="n">mutiny</span><span class="o">-</span><span class="n">demo</span><span class="o">/</span><span class="n">src</span><span class="o">/</span><span class="n">main</span><span class="o">/</span><span class="n">java</span><span class="o">/</span><span class="n">at</span><span class="o">/</span><span class="n">htl</span><span class="o">/</span><span class="n">feature</span><span class="o">/</span><span class="n">user</span><span class="o">/</span><span class="nc">UserResource</span><span class="o">.</span><span class="na">java</span><span class="o">[]</span></code></pre>
+</div>
+</div>
+</div>
+</details>
 </div>
 </div>
 </div>
 <div class="sect1">
-<h2 id="_glossar"><a class="anchor" href="#_glossar"></a>7. Glossar:</h2>
+<h2 id="_bonus_franklyn"><a class="anchor" href="#_bonus_franklyn"></a>12. Bonus: Franklyn</h2>
+<div class="sectionbody">
+
+</div>
+</div>
+<div class="sect1">
+<h2 id="_glossar"><a class="anchor" href="#_glossar"></a>13. Glossar</h2>
 <div class="sectionbody">
 <div class="ulist">
 <ul>
@@ -1040,12 +1575,18 @@ Eine Quelle veröffentlicht nur dann Events, wenn sie von einem <strong>Subscrib
 <li>
 <p><strong>Repräsentieren</strong>: etwas, nach außen vertreten</p>
 </li>
+<li>
+<p><strong>Kontext</strong>: inhaltlicher Sach- und Situationszusammenhang, in dem etwas (z.B. eine Äußerung) steht</p>
+</li>
+<li>
+<p><strong>Imperativ (Programmierung)</strong>: Ein Programm besteht aus einer Folge von Anweisungen, die nacheinander ausgeführt werden.</p>
+</li>
 </ul>
 </div>
 </div>
 </div>
 <div class="sect1">
-<h2 id="_quellen"><a class="anchor" href="#_quellen"></a>8. Quellen</h2>
+<h2 id="_quellen"><a class="anchor" href="#_quellen"></a>14. Quellen</h2>
 <div class="sectionbody">
 <div class="ulist">
 <ul>
@@ -1113,17 +1654,40 @@ Eine Quelle veröffentlicht nur dann Events, wenn sie von einem <strong>Subscrib
 <p><a href="https://stackoverflow.com/questions/34680985/what-is-the-difference-between-asynchronous-programming-and-multithreading" class="bare">https://stackoverflow.com/questions/34680985/what-is-the-difference-between-asynchronous-programming-and-multithreading</a></p>
 </li>
 <li>
-<p><a href="https://www.linkedin.com/pulse/multithreading-vs-asynchronous-programming-net-core-mate-abulashvili-9u4ue" class="bare">https://www.linkedin.com/pulse/multithreading-vs-asynchronous-programming-net-core-mate-abulashvili-9u4ue</a>
-<a href="https://smallrye.io/smallrye-mutiny/latest/guides/merging-and-concatenating-streams/" class="bare">https://smallrye.io/smallrye-mutiny/latest/guides/merging-and-concatenating-streams/</a>
-<a href="https://smallrye.io/smallrye-mutiny/latest/guides/emit-on-vs-run-subscription-on/" class="bare">https://smallrye.io/smallrye-mutiny/latest/guides/emit-on-vs-run-subscription-on/</a>
-<a href="https://www.reactivemanifesto.org/" class="bare">https://www.reactivemanifesto.org/</a>
-<a href="https://smallrye.io/smallrye-mutiny/latest/reference/going-reactive-a-few-pitfalls/#creating-uni-and-multi-from-in-memory-data-might-be-suspicious" class="bare">https://smallrye.io/smallrye-mutiny/latest/reference/going-reactive-a-few-pitfalls/#creating-uni-and-multi-from-in-memory-data-might-be-suspicious</a>
-<a href="https://en.wikipedia.org/wiki/Side_effect_(computer_science" class="bare">https://en.wikipedia.org/wiki/Side_effect_(computer_science</a>)
-<a href="https://en.wikipedia.org/wiki/Sink_(computing" class="bare">https://en.wikipedia.org/wiki/Sink_(computing</a>)
-<a href="https://smallrye.io/smallrye-mutiny/latest/reference/uni-and-multi/" class="bare">https://smallrye.io/smallrye-mutiny/latest/reference/uni-and-multi/</a>
-<a href="https://smallrye.io/smallrye-mutiny/latest/reference/publications/" class="bare">https://smallrye.io/smallrye-mutiny/latest/reference/publications/</a>
-<a href="https://dl.acm.org/doi/10.1145/3486605.3486788" class="bare">https://dl.acm.org/doi/10.1145/3486605.3486788</a>
-<a href="https://smallrye.io/smallrye-mutiny/latest/tags-index/#advanced" class="bare">https://smallrye.io/smallrye-mutiny/latest/tags-index/#advanced</a></p>
+<p><a href="https://www.linkedin.com/pulse/multithreading-vs-asynchronous-programming-net-core-mate-abulashvili-9u4ue" class="bare">https://www.linkedin.com/pulse/multithreading-vs-asynchronous-programming-net-core-mate-abulashvili-9u4ue</a></p>
+</li>
+<li>
+<p><a href="https://smallrye.io/smallrye-mutiny/latest/guides/merging-and-concatenating-streams/" class="bare">https://smallrye.io/smallrye-mutiny/latest/guides/merging-and-concatenating-streams/</a></p>
+</li>
+<li>
+<p><a href="https://smallrye.io/smallrye-mutiny/latest/guides/emit-on-vs-run-subscription-on/" class="bare">https://smallrye.io/smallrye-mutiny/latest/guides/emit-on-vs-run-subscription-on/</a></p>
+</li>
+<li>
+<p><a href="https://www.reactivemanifesto.org/" class="bare">https://www.reactivemanifesto.org/</a></p>
+</li>
+<li>
+<p><a href="https://smallrye.io/smallrye-mutiny/latest/reference/going-reactive-a-few-pitfalls/#creating-uni-and-multi-from-in-memory-data-might-be-suspicious" class="bare">https://smallrye.io/smallrye-mutiny/latest/reference/going-reactive-a-few-pitfalls/#creating-uni-and-multi-from-in-memory-data-might-be-suspicious</a></p>
+</li>
+<li>
+<p><a href="https://en.wikipedia.org/wiki/Side_effect_(computer_science" class="bare">https://en.wikipedia.org/wiki/Side_effect_(computer_science</a>)</p>
+</li>
+<li>
+<p><a href="https://en.wikipedia.org/wiki/Sink_(computing" class="bare">https://en.wikipedia.org/wiki/Sink_(computing</a>)</p>
+</li>
+<li>
+<p><a href="https://smallrye.io/smallrye-mutiny/latest/reference/uni-and-multi/" class="bare">https://smallrye.io/smallrye-mutiny/latest/reference/uni-and-multi/</a></p>
+</li>
+<li>
+<p><a href="https://smallrye.io/smallrye-mutiny/latest/reference/publications/" class="bare">https://smallrye.io/smallrye-mutiny/latest/reference/publications/</a></p>
+</li>
+<li>
+<p><a href="https://dl.acm.org/doi/10.1145/3486605.3486788" class="bare">https://dl.acm.org/doi/10.1145/3486605.3486788</a></p>
+</li>
+<li>
+<p><a href="https://smallrye.io/smallrye-mutiny/latest/tags-index/#advanced" class="bare">https://smallrye.io/smallrye-mutiny/latest/tags-index/#advanced</a></p>
+</li>
+<li>
+<p><a href="https://inria.hal.science/hal-03409277/file/paper-author-version.pdf" class="bare">https://inria.hal.science/hal-03409277/file/paper-author-version.pdf</a></p>
 </li>
 </ul>
 </div>
@@ -1133,7 +1697,7 @@ Eine Quelle veröffentlicht nur dann Events, wenn sie von einem <strong>Subscrib
 <div id="footer">
 <div id="footer-text">
 Version 1.0<br>
-Last updated 2024-11-29 07:02:42 UTC
+Last updated 2024-12-05 18:54:32 UTC
 </div>
 </div>
 </body>
