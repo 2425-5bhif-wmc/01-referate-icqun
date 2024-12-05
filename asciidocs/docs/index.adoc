@@ -110,7 +110,7 @@ Neben *Datenströmen* sind *Events* (Ereignisse) eine weitere Kernkomponente von
 *** Programmierung benötigt keine fortgeschrittenen Programmierkenntnisse
 *** Leichter zu verstehen
 ** Auch nach 6 Monaten Programmierpause noch lesbar
-** Leichtgewichtiger
+** Library Sourcecode leichtgewichtiger
 *** Weniger LinesOfCode (LOC)
 *** Weniger Files
 
@@ -131,7 +131,7 @@ Neben *Datenströmen* sind *Events* (Ereignisse) eine weitere Kernkomponente von
 
 == Events und Pipelines
 Als Nutzer/in von Mutiny erstellt man *Pipelines*, durch die die Events "fließen". Eine *Pipeline* ist eine *Menge von Verarbeitungsschritten*, die vom Programmierer definiert werden. +
-Grundsätzlich "fließen" Events von Quellen (*sources*) zu Senken (*sinks*). +
+Grundsätzlich "fließen" Events von Quellen (*sources*) zu bis zu ihrem Ziel (*sinks*). +
 Events werden von *Publishern* "veröffentlicht" und am Ende der Pipeline von *Subscribern* konsumiert.
 
 image::pp-ev-example.png[]
@@ -152,31 +152,291 @@ Mutiny definiert zwei reaktive Datentypen:
 
 Sowohl `Uni<T>` als auch `Multi<T>` sind asynchrone Datentypen. Sie beobachten und veröffentlichen Events zu beliebigen Zeitpunkten.
 
-== Demo
+
+== Codebeispiel für Pipelines
+.Reaktiver get by ID REST Endpunkt
+[source, java, indent=0]
+----
+include::../../mutiny-demo/src/main/java/at/htl/feature/user/UserResource.java[tag=get_simple]
+----
+.Erklärung
+[%collapsible]
+====
+<.> Startet eine reaktive `Session` für die Methode. Ohne Session können keine Datenbankzugriffe durchgeführt werden. Vergleichbar mit der klassischen (blockierenden) `org.Hibernate.Session` / `Entity Manager`. Die `Session` ermöglicht es uns unter anderem `CRUD` Operationen mit unseren Entitäten durchzuführen.
+
+<.> Der Rückgabewert der Funktion ist nicht wie bei herkömmlichen synchronen Funktionen `Response` sondern `Uni<Response>`. Wir geben hier eine Eventquelle zurück, die "verspricht" *genau eine Response* oder *eine Failure* zu veröffentlichen.
+
+<.> In diesem Fall ist unsere Eventquelle der Aufruf des PanacheRepositories `findById`. Dieser gibt einen `Uni<User>` zurück, verspricht also genau einen Benutzer oder einen Fehler zurückzugeben.
+
+<.> Mit `onItem().transform()` fügen wir einen zusätzlichen Verarbeitungsschritt in unserer `Pipeline` hinzu. In diesem Fall wird unsere `User` Entität zu einem `UserDto` umgewandelt. Das Item, das das Event mit sich trägt, wird durch `transform` also durch ein neues ersetzt. Das Ergebnis wird wieder in den Datenstrom gegeben.
+====
+image::get-by-id-pipeline.png[]
+
+.Reaktiver createUser REST Endpunkt
+[source, java, indent=0]
+----
+include::../../mutiny-demo/src/main/java/at/htl/feature/user/UserResource.java[tag=create]
+----
+.Erklärung
+[%collapsible]
+====
+<.> `@WithTransaction` ist in das reaktive Equivalent zu `@Transactional`
+
+<.> Der Rückgabewert der Funktion ist nicht wie bei herkömmlichen synchronen Funktionen `Response` sondern `Uni<Response>`. Wir geben hier eine Eventquelle zurück, die "verspricht" *genau eine Response* oder *eine Failure* zu veröffentlichen.
+
+<.> Hier erstellen wir unseren Datenstrom mit einem *Item*. In diesem Fall ist das das User-Objekt, welches wir erhalten haben.
+
+<.> Mit *onItem* horchen wir auf das *Item* Event des Streams. Erhalten wir ein *Null-Item* so erstellen wir ein neues *Failure* Event, welches eine `WebApplicationException` trägt
+
+<.> Erhalten wir *kein* *Null-Item*, transformieren wir unser *Item-Event*. Wir persistieren das mitgegebene User-Objekt. Der Repository aufruf gibt erneut einen `Uni<T>` zurück. Mit `transformToUni` transformieren wir das Event in Datenstrom mit einer asynchronen Funktion. Das Event, welches vom zurückgegebenen `Uni` produziert wird, wird in den Datenfluss gegeben.
+
+<.> Im letzten Schritt transformieren wir unseren `Uni` erneut, aber dieses Mal mit `transform`. Hier wird nicht der Datenstrom, sondern das Item im Datenstrom ersetzt. Aus dem User (`Uni<User>`) wird eine Response. (`Uni<Response>`)
+====
+image::create-new-pipeline.png[]
+
+
+== Nützliche Funktionen
+In den vorangehenden Beispielen wurden bereits einige nützliche Funktionen verwenden. Nachfolgenden werden diese genauer erklärt und erweitert.
+
+`on{event}()` erlaubt es auf verschiedene Events zu achten. Auf `onItem()` und `onFailure()` wird in den folgenden Abschnitten genauer eingegangen.
+
+=== Items
+`onItem()`
+
+[cols="a,a"]
+|===
+| `.transform(Function<T, R> mapper)`
+| Vergleichbar mit Java streams `map`. Transformiert das im Event enthaltene Item vom Typ `T` und emittiert schließlich das neue Item vom Typ `R`.
+
+| `.transformToUni(Function<T, Uni<R>> mapper)`
+| Wandelt das im Event enthaltene Item vom Typ `T` mithilfe einer asynchronen Funktion in den Typen `R` um. Das vom zurückgegebenen Uni<R> emittierte Event wird schließlich weitergereicht.
+
+| `.invoke(Consumer<T> consumer)`
+| Führt den Consumer `consumer` aus und übergibt ihm das derzeitige Item. Das Event bleibt unverändert und wird nach der Ausführung des Consumers weitergereicht.
+
+| `.call(Function<T,Uni<>> consumer)`
+| Sehr ähnlich zu `.invoke()`, mit dem Unterschied, dass der ausgeführte Consumer asynchron ausgeführt wird. Das Event bleibt erneut unverändert.
+|===
+
+
+=== Failures
+`onFailure()`
+
+[cols="a,a"]
+|===
+| `.recoverWithItem(T item)`
+| Wandelt das `Failure` Event in ein `Item` Event mit dem Inhalt `item` um und reicht das neue Event weiter.
+
+| `.retry().atMost(long attempts)`
+| Versucht die fehlgeschlagene Aktion noch einmal auszuführen. Sollte diese mehrfach fehlschlagen wird sie maximal `attempts`-Mal ausgeführt.
+|===
+
+== Codevergleich: reaktiv vs imperativ
+++++
+<style>
+    .hide-callouts .conum {
+        display: none;
+    }
+</style>
+++++
+=== GetById
+[cols="a"]
+|===
+| Reaktiv
+| [source, java, indent=0, role="hide-callouts"]
+----
+include::../../mutiny-demo/src/main/java/at/htl/feature/user/UserResource.java[tag=get_simple]
+----
+| Imperativ
+| [source, java, indent=0]
+----
+include::../../classic-demo/src/main/java/at/htl/feature/user/UserResource.java[tag=get_simple_classic]
+----
+|===
+
+Sowohl die imperative als auch reaktive Version des `getById`-Endpunkts sind relativ kompakt und übersichtlich.
+
+=== CreateUser
+[cols="a"]
+|===
+| Reaktiv
+| [source, java, indent=0, role="hide-callouts"]
+----
+include::../../mutiny-demo/src/main/java/at/htl/feature/user/UserResource.java[tag=create]
+----
+| Imperativ
+| [source, java, indent=0]
+----
+include::../../classic-demo/src/main/java/at/htl/feature/user/UserResource.java[tag=create_classic]
+----
+|===
+
+Obwohl durch die reaktive Variante nur ein einziger blockierender Aufruf verhindert wird, ist sie schon etwas länger und definitiv komplizierter.
+
+
+== Anwendungsfälle von reaktivem Programmieren
+Mutiny beziehungsweise reaktives Programmieren im Allgemeinen, ist kein "Wundermittel". Es gibt Anwendungsfälle, bei denen reaktives Programmieren *keine* Vorteile mit sich bringt oder sogar Nachteile.
+
+*Reaktives Programmieren* ist in Fällen in denen
+
+* *viele I/O Operationen* ausgeführt
+* und/oder *eine große Menge an Anfragen gleichzeitig* verarbeitet
+
+werden müssen *vorteilhaft*. (_I/O Bound_ Tasks)
+
+*Imperatives Programmieren* ist in Fällen in denen
+
+* *Daten im Hauptspeicher* verarbeitet
+* und *wenig bis keine I/O Operationen* durchgeführt
+
+werden müssen *vorteilhaft*. (_CPU Bound_ Tasks)
+
+== Warum reaktives Programmieren in Franklyn eingesetzt wird
+* Massenweise I/O Operationen
+** Screenshot speichern/laden (Datenbank + Filesystem)
+** Regelmäßiges speichern vom Verbindungszustand (Datenbank)
+** Exam CRUD Operationen
+* Große Mengen an Anfragen während Tests
+** Dauerhafte Kommunikation mit 20 - 30 Schüler:innen pro Test
+** Regelmäßige Screenshot-uploads
+
+== Demos
+Im https://github.com/2425-5bhif-wmc/01-referate-icqun[Repository] sind neben der Dokumentation auch noch 2 Demoprojekte aufzufinden:
+
+image::demo-projects.png[]
+
+Beide Projekte implementieren einen kleinen REST-Service, mit einem `User` Endpunkt, welcher `create` und `read` Operationen zur Verfügung stellt.
+Die erstellten Nutzer werden in der Datenbank gespeichert. Bei `read` Operationen wird das um einige "sensible" Daten reduzierte `UserDto` zurückgeliefert.
+
+*Klassen*
+
+image::demo-feature.png[]
+
+* `User`: User Entität, die in der Datenbank gespeichert wird
+* `UserDto`: User ohne "sensible" Daten (DateOfBirth, Adresse)
+* `UserRepository`: Panache repository für Datenbankzugriffe
+* `UserResource`: REST Endpunkte für `read` und `create`
+
+Die `User` und `UserDto` Klassen sind für beide Projekte gleich:
+
+.User
+[%collapsible]
+====
+[source,java]
+----
+include::../../mutiny-demo/src/main/java/at/htl/feature/user/User.java[]
+----
+====
+
+.UserDto
+[%collapsible]
+====
+[source,java]
+----
+include::../../mutiny-demo/src/main/java/at/htl/feature/user/UserDto.java[]
+----
+====
+
+==== Unterschied classic vs mutiny
+* *classic-demo*: Implementierung der REST Endpunkte ist durch "klassische" blockierende Datenbankzugriffe umgesetzt.
+
+* *mutiny-demo*: Implementierung der REST Endpunkte mit reaktiven asynchronen Datenbankzugriffen.
+
+=== Classic (Imperativ)
 .Projekt erstellen
 [source, shell]
 ----
-mvn io.quarkus.platform:quarkus-maven-plugin:3.17.0:create \
+mvn io.quarkus.platform:quarkus-maven-plugin:3.17.3:create \
+    -DprojectGroupId=at.htl \
+    -DprojectArtifactId=classic-demo \
+    -Dextensions='rest-jackson, quarkus-hibernate-orm-panache, quarkus-jdbc-postgresql, smallrye-openapi'
+cd classic-demo
+----
+
+Für die imperative Implementierung werden
+
+* `quarkus-hibernate-orm-panache`
+* und `quarkus-jdbc-postgresql`
+
+für als Bibliotheken für Datenbankzugriffe verwendet.
+
+.application.properties
+[source, properties, highlight=4]
+----
+include::../../classic-demo/src/main/resources/application.properties[]
+----
+
+In den `application.properties` wird hier ein `jdbc` connection string verwendet. Sonst unterscheidet sich die Konfigurationsdatei nicht von der reaktiven Variante.
+
+`UserRepository` und `UserResource` sind wie folgt implementiert:
+
+.UserRepository
+[%collapsible]
+====
+[source,java]
+----
+include::../../classic-demo/src/main/java/at/htl/feature/user/UserRepository.java[]
+----
+====
+
+.UserResource
+[%collapsible]
+====
+[source,java]
+----
+include::../../classic-demo/src/main/java/at/htl/feature/user/UserResource.java[]
+----
+====
+
+=== Mutiny (Reaktiv)
+.Projekt erstellen
+[source, shell]
+----
+mvn io.quarkus.platform:quarkus-maven-plugin:3.17.3:create \
     -DprojectGroupId=at.htl \
     -DprojectArtifactId=mutiny-demo \
     -Dextensions='rest-jackson, quarkus-hibernate-reactive-panache, quarkus-reactive-pg-client, smallrye-openapi'
 cd mutiny-demo
 ----
 
+Für die reaktive Implementierung werden
+
+* `quarkus-hibernate-reactive-panache` (statt `quarkus-hibernate-orm-panache`)
+* und `quarkus-reactive-pg-client` (statt `quarkus-jdbc-postgresql`)
+
+für als Bibliotheken für Datenbankzugriffe verwendet.
+
 .application.properties
-[source, properties]
+[source, properties, highlight=4]
 ----
-quarkus.datasource.db-kind = postgresql
-quarkus.datasource.username = app
-quarkus.datasource.password = app
-quarkus.datasource.reactive.url = vertx-reactive:postgresql://localhost:5432/db
-
-%dev.quarkus.hibernate-orm.database.generation=drop-and-create
+include::../../mutiny-demo/src/main/resources/application.properties[]
 ----
 
+Statt dem `jdbc` Datenbank Treiber wird für reaktive Datenbankzugriffe der `vertx-reactive` Treiber verwendet.
 
+`UserRepository` und `UserResource` sind wie folgt implementiert:
 
-== Glossar:
+.UserRepository
+[%collapsible]
+====
+[source,java]
+----
+include::../../mutiny-demo/src/main/java/at/htl/feature/user/UserRepository.java[]
+----
+====
+
+.UserResource
+[%collapsible]
+====
+[source,java]
+----
+include::../../mutiny-demo/src/main/java/at/htl/feature/user/UserResource.java[]
+----
+====
+
+== Bonus: Franklyn
+
+== Glossar
 * *Mutiny*
 ** Deutsch: Meuterei
 *** gemeinsame Auflehnung gegen jemanden oder etwas
@@ -194,6 +454,8 @@ quarkus.datasource.reactive.url = vertx-reactive:postgresql://localhost:5432/db
 * *Subscribe*: Abonnieren
 ** für den fortlaufenden Bezug bestellt
 * *Repräsentieren*: etwas, nach außen vertreten
+* *Kontext*: inhaltlicher Sach- und Situationszusammenhang, in dem etwas (z.B. eine Äußerung) steht
+* *Imperativ (Programmierung)*: Ein Programm besteht aus einer Folge von Anweisungen, die nacheinander ausgeführt werden.
 
 == Quellen
 * https://quarkus.io/guides/mutiny-primer
@@ -218,13 +480,14 @@ quarkus.datasource.reactive.url = vertx-reactive:postgresql://localhost:5432/db
 * https://www.baeldung.com/cs/async-vs-multi-threading
 * https://stackoverflow.com/questions/34680985/what-is-the-difference-between-asynchronous-programming-and-multithreading
 * https://www.linkedin.com/pulse/multithreading-vs-asynchronous-programming-net-core-mate-abulashvili-9u4ue
-https://smallrye.io/smallrye-mutiny/latest/guides/merging-and-concatenating-streams/
-https://smallrye.io/smallrye-mutiny/latest/guides/emit-on-vs-run-subscription-on/
-https://www.reactivemanifesto.org/
-https://smallrye.io/smallrye-mutiny/latest/reference/going-reactive-a-few-pitfalls/#creating-uni-and-multi-from-in-memory-data-might-be-suspicious
-https://en.wikipedia.org/wiki/Side_effect_(computer_science)
-https://en.wikipedia.org/wiki/Sink_(computing)
-https://smallrye.io/smallrye-mutiny/latest/reference/uni-and-multi/
-https://smallrye.io/smallrye-mutiny/latest/reference/publications/
-https://dl.acm.org/doi/10.1145/3486605.3486788
-https://smallrye.io/smallrye-mutiny/latest/tags-index/#advanced
+* https://smallrye.io/smallrye-mutiny/latest/guides/merging-and-concatenating-streams/
+* https://smallrye.io/smallrye-mutiny/latest/guides/emit-on-vs-run-subscription-on/
+* https://www.reactivemanifesto.org/
+* https://smallrye.io/smallrye-mutiny/latest/reference/going-reactive-a-few-pitfalls/#creating-uni-and-multi-from-in-memory-data-might-be-suspicious
+* https://en.wikipedia.org/wiki/Side_effect_(computer_science)
+* https://en.wikipedia.org/wiki/Sink_(computing)
+* https://smallrye.io/smallrye-mutiny/latest/reference/uni-and-multi/
+* https://smallrye.io/smallrye-mutiny/latest/reference/publications/
+* https://dl.acm.org/doi/10.1145/3486605.3486788
+* https://smallrye.io/smallrye-mutiny/latest/tags-index/#advanced
+* https://inria.hal.science/hal-03409277/file/paper-author-version.pdf
