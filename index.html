@@ -962,7 +962,19 @@ Eine Quelle veröffentlicht nur dann Events, wenn sie von einem <strong>Subscrib
 <div class="listingblock">
 <div class="title">Reaktiver get by ID REST Endpunkt</div>
 <div class="content">
-<pre class="rouge highlight"><code data-lang="java"><span class="nc">Unresolved</span> <span class="n">directive</span> <span class="n">in</span> <span class="n">index</span><span class="o">.</span><span class="na">adoc</span> <span class="o">-</span> <span class="nl">include:</span><span class="o">:../../</span><span class="n">mutiny</span><span class="o">-</span><span class="n">demo</span><span class="o">/</span><span class="n">src</span><span class="o">/</span><span class="n">main</span><span class="o">/</span><span class="n">java</span><span class="o">/</span><span class="n">at</span><span class="o">/</span><span class="n">htl</span><span class="o">/</span><span class="n">feature</span><span class="o">/</span><span class="n">user</span><span class="o">/</span><span class="nc">UserResource</span><span class="o">.</span><span class="na">java</span><span class="o">[</span><span class="n">tag</span><span class="o">=</span><span class="n">get_simple</span><span class="o">]</span></code></pre>
+<pre class="rouge highlight"><code data-lang="java"><span class="nd">@GET</span>
+<span class="nd">@Path</span><span class="o">(</span><span class="s">"{id}"</span><span class="o">)</span>
+<span class="nd">@Produces</span><span class="o">(</span><span class="nc">MediaType</span><span class="o">.</span><span class="na">APPLICATION_JSON</span><span class="o">)</span>
+<span class="nd">@WithSession</span> <i class="conum" data-value="1"></i><b>(1)</b>
+<span class="kd">public</span> <span class="nc">Uni</span><span class="o">&lt;</span><span class="nc">UserDto</span><span class="o">&gt;</span> <span class="nf">getById</span><span class="o">(</span><span class="nd">@PathParam</span><span class="o">(</span><span class="s">"id"</span><span class="o">)</span> <span class="nc">Long</span> <span class="n">id</span><span class="o">)</span> <span class="o">{</span> <i class="conum" data-value="2"></i><b>(2)</b>
+    <span class="k">return</span> <span class="n">userRepository</span><span class="o">.</span><span class="na">findById</span><span class="o">(</span><span class="n">id</span><span class="o">)</span> <i class="conum" data-value="3"></i><b>(3)</b>
+            <span class="o">.</span><span class="na">onItem</span><span class="o">().</span><span class="na">transform</span><span class="o">(</span><span class="n">user</span> <span class="o">-&gt;</span> <span class="k">new</span> <span class="nc">UserDto</span><span class="o">(</span> <i class="conum" data-value="4"></i><b>(4)</b>
+                    <span class="n">user</span><span class="o">.</span><span class="na">getId</span><span class="o">(),</span>
+                    <span class="n">user</span><span class="o">.</span><span class="na">getFirstName</span><span class="o">(),</span>
+                    <span class="n">user</span><span class="o">.</span><span class="na">getLastName</span><span class="o">(),</span>
+                    <span class="n">user</span><span class="o">.</span><span class="na">getEmail</span><span class="o">())</span>
+            <span class="o">);</span>
+<span class="o">}</span></code></pre>
 </div>
 </div>
 <details>
@@ -998,7 +1010,27 @@ Eine Quelle veröffentlicht nur dann Events, wenn sie von einem <strong>Subscrib
 <div class="listingblock">
 <div class="title">Reaktiver createUser REST Endpunkt</div>
 <div class="content">
-<pre class="rouge highlight"><code data-lang="java"><span class="nc">Unresolved</span> <span class="n">directive</span> <span class="n">in</span> <span class="n">index</span><span class="o">.</span><span class="na">adoc</span> <span class="o">-</span> <span class="nl">include:</span><span class="o">:../../</span><span class="n">mutiny</span><span class="o">-</span><span class="n">demo</span><span class="o">/</span><span class="n">src</span><span class="o">/</span><span class="n">main</span><span class="o">/</span><span class="n">java</span><span class="o">/</span><span class="n">at</span><span class="o">/</span><span class="n">htl</span><span class="o">/</span><span class="n">feature</span><span class="o">/</span><span class="n">user</span><span class="o">/</span><span class="nc">UserResource</span><span class="o">.</span><span class="na">java</span><span class="o">[</span><span class="n">tag</span><span class="o">=</span><span class="n">create</span><span class="o">]</span></code></pre>
+<pre class="rouge highlight"><code data-lang="java"><span class="nd">@POST</span>
+<span class="nd">@Produces</span><span class="o">(</span><span class="nc">MediaType</span><span class="o">.</span><span class="na">APPLICATION_JSON</span><span class="o">)</span>
+<span class="nd">@Consumes</span><span class="o">(</span><span class="nc">MediaType</span><span class="o">.</span><span class="na">APPLICATION_JSON</span><span class="o">)</span>
+<span class="nd">@WithTransaction</span> <i class="conum" data-value="1"></i><b>(1)</b>
+<span class="kd">public</span> <span class="nc">Uni</span><span class="o">&lt;</span><span class="nc">Response</span><span class="o">&gt;</span> <span class="nf">createNew</span><span class="o">(</span><span class="nc">User</span> <span class="n">user</span><span class="o">,</span> <span class="nd">@Context</span> <span class="nc">UriInfo</span> <span class="n">uriInfo</span><span class="o">)</span> <span class="o">{</span> <i class="conum" data-value="2"></i><b>(2)</b>
+    <span class="k">return</span> <span class="nc">Uni</span><span class="o">.</span><span class="na">createFrom</span><span class="o">()</span>
+            <span class="o">.</span><span class="na">item</span><span class="o">(</span><span class="n">user</span><span class="o">)</span> <i class="conum" data-value="3"></i><b>(3)</b>
+            <span class="o">.</span><span class="na">onItem</span><span class="o">().</span><span class="na">ifNull</span><span class="o">().</span><span class="na">failWith</span><span class="o">(</span><span class="k">new</span> <span class="nc">WebApplicationException</span><span class="o">(</span><span class="nc">Response</span><span class="o">.</span><span class="na">Status</span><span class="o">.</span><span class="na">BAD_REQUEST</span><span class="o">))</span> <i class="conum" data-value="4"></i><b>(4)</b>
+            <span class="o">.</span><span class="na">onItem</span><span class="o">().</span><span class="na">ifNotNull</span><span class="o">().</span><span class="na">transformToUni</span><span class="o">(</span><span class="n">ignored</span> <span class="o">-&gt;</span> <span class="n">userRepository</span><span class="o">.</span><span class="na">persistAndFlush</span><span class="o">(</span><span class="n">user</span><span class="o">))</span> <i class="conum" data-value="5"></i><b>(5)</b>
+            <span class="o">.</span><span class="na">onItem</span><span class="o">().</span><span class="na">transform</span><span class="o">(</span><span class="n">u</span> <span class="o">-&gt;</span> <span class="o">{</span> <i class="conum" data-value="6"></i><b>(6)</b>
+                <span class="no">URI</span> <span class="n">uri</span> <span class="o">=</span> <span class="n">uriInfo</span>
+                        <span class="o">.</span><span class="na">getAbsolutePathBuilder</span><span class="o">()</span>
+                        <span class="o">.</span><span class="na">path</span><span class="o">(</span><span class="nc">Long</span><span class="o">.</span><span class="na">toString</span><span class="o">(</span><span class="n">u</span><span class="o">.</span><span class="na">getId</span><span class="o">()))</span>
+                        <span class="o">.</span><span class="na">build</span><span class="o">();</span>
+
+                <span class="k">return</span> <span class="nc">Response</span>
+                        <span class="o">.</span><span class="na">created</span><span class="o">(</span><span class="n">uri</span><span class="o">)</span>
+                        <span class="o">.</span><span class="na">entity</span><span class="o">(</span><span class="n">u</span><span class="o">)</span>
+                        <span class="o">.</span><span class="na">build</span><span class="o">();</span>
+            <span class="o">});</span>
+<span class="o">}</span></code></pre>
 </div>
 </div>
 <details>
@@ -1151,7 +1183,19 @@ Eine Quelle veröffentlicht nur dann Events, wenn sie von einem <strong>Subscrib
 <tr>
 <td class="tableblock halign-left valign-top"><div class="content"><div class="listingblock hide-callouts">
 <div class="content">
-<pre class="rouge highlight"><code data-lang="java"><span class="nc">Unresolved</span> <span class="n">directive</span> <span class="n">in</span> <span class="n">index</span><span class="o">.</span><span class="na">adoc</span> <span class="o">-</span> <span class="nl">include:</span><span class="o">:../../</span><span class="n">mutiny</span><span class="o">-</span><span class="n">demo</span><span class="o">/</span><span class="n">src</span><span class="o">/</span><span class="n">main</span><span class="o">/</span><span class="n">java</span><span class="o">/</span><span class="n">at</span><span class="o">/</span><span class="n">htl</span><span class="o">/</span><span class="n">feature</span><span class="o">/</span><span class="n">user</span><span class="o">/</span><span class="nc">UserResource</span><span class="o">.</span><span class="na">java</span><span class="o">[</span><span class="n">tag</span><span class="o">=</span><span class="n">get_simple</span><span class="o">]</span></code></pre>
+<pre class="rouge highlight"><code data-lang="java"><span class="nd">@GET</span>
+<span class="nd">@Path</span><span class="o">(</span><span class="s">"{id}"</span><span class="o">)</span>
+<span class="nd">@Produces</span><span class="o">(</span><span class="nc">MediaType</span><span class="o">.</span><span class="na">APPLICATION_JSON</span><span class="o">)</span>
+<span class="nd">@WithSession</span> <i class="conum" data-value="1"></i><b>(1)</b>
+<span class="kd">public</span> <span class="nc">Uni</span><span class="o">&lt;</span><span class="nc">UserDto</span><span class="o">&gt;</span> <span class="nf">getById</span><span class="o">(</span><span class="nd">@PathParam</span><span class="o">(</span><span class="s">"id"</span><span class="o">)</span> <span class="nc">Long</span> <span class="n">id</span><span class="o">)</span> <span class="o">{</span> <i class="conum" data-value="2"></i><b>(2)</b>
+    <span class="k">return</span> <span class="n">userRepository</span><span class="o">.</span><span class="na">findById</span><span class="o">(</span><span class="n">id</span><span class="o">)</span> <i class="conum" data-value="3"></i><b>(3)</b>
+            <span class="o">.</span><span class="na">onItem</span><span class="o">().</span><span class="na">transform</span><span class="o">(</span><span class="n">user</span> <span class="o">-&gt;</span> <span class="k">new</span> <span class="nc">UserDto</span><span class="o">(</span> <i class="conum" data-value="4"></i><b>(4)</b>
+                    <span class="n">user</span><span class="o">.</span><span class="na">getId</span><span class="o">(),</span>
+                    <span class="n">user</span><span class="o">.</span><span class="na">getFirstName</span><span class="o">(),</span>
+                    <span class="n">user</span><span class="o">.</span><span class="na">getLastName</span><span class="o">(),</span>
+                    <span class="n">user</span><span class="o">.</span><span class="na">getEmail</span><span class="o">())</span>
+            <span class="o">);</span>
+<span class="o">}</span></code></pre>
 </div>
 </div></div></td>
 </tr>
@@ -1163,7 +1207,21 @@ Eine Quelle veröffentlicht nur dann Events, wenn sie von einem <strong>Subscrib
 <tr>
 <td class="tableblock halign-left valign-top"><div class="content"><div class="listingblock">
 <div class="content">
-<pre class="rouge highlight"><code data-lang="java"><span class="nc">Unresolved</span> <span class="n">directive</span> <span class="n">in</span> <span class="n">index</span><span class="o">.</span><span class="na">adoc</span> <span class="o">-</span> <span class="nl">include:</span><span class="o">:../../</span><span class="n">classic</span><span class="o">-</span><span class="n">demo</span><span class="o">/</span><span class="n">src</span><span class="o">/</span><span class="n">main</span><span class="o">/</span><span class="n">java</span><span class="o">/</span><span class="n">at</span><span class="o">/</span><span class="n">htl</span><span class="o">/</span><span class="n">feature</span><span class="o">/</span><span class="n">user</span><span class="o">/</span><span class="nc">UserResource</span><span class="o">.</span><span class="na">java</span><span class="o">[</span><span class="n">tag</span><span class="o">=</span><span class="n">get_simple_classic</span><span class="o">]</span></code></pre>
+<pre class="rouge highlight"><code data-lang="java"><span class="nd">@GET</span>
+<span class="nd">@Path</span><span class="o">(</span><span class="s">"{id}"</span><span class="o">)</span>
+<span class="nd">@Produces</span><span class="o">(</span><span class="nc">MediaType</span><span class="o">.</span><span class="na">APPLICATION_JSON</span><span class="o">)</span>
+<span class="kd">public</span> <span class="nc">UserDto</span> <span class="nf">getById</span><span class="o">(</span><span class="nd">@PathParam</span><span class="o">(</span><span class="s">"id"</span><span class="o">)</span> <span class="nc">Long</span> <span class="n">id</span><span class="o">)</span> <span class="o">{</span>
+    <span class="c1">// = Blocking=</span>
+    <span class="nc">User</span> <span class="n">user</span> <span class="o">=</span> <span class="n">userRepository</span><span class="o">.</span><span class="na">findById</span><span class="o">(</span><span class="n">id</span><span class="o">);</span>
+    <span class="c1">// = Blocking =</span>
+
+    <span class="k">return</span> <span class="k">new</span> <span class="nf">UserDto</span><span class="o">(</span>
+                    <span class="n">user</span><span class="o">.</span><span class="na">getId</span><span class="o">(),</span>
+                    <span class="n">user</span><span class="o">.</span><span class="na">getFirstName</span><span class="o">(),</span>
+                    <span class="n">user</span><span class="o">.</span><span class="na">getLastName</span><span class="o">(),</span>
+                    <span class="n">user</span><span class="o">.</span><span class="na">getEmail</span><span class="o">()</span>
+    <span class="o">);</span>
+<span class="o">}</span></code></pre>
 </div>
 </div></div></td>
 </tr>
@@ -1188,7 +1246,27 @@ Eine Quelle veröffentlicht nur dann Events, wenn sie von einem <strong>Subscrib
 <tr>
 <td class="tableblock halign-left valign-top"><div class="content"><div class="listingblock hide-callouts">
 <div class="content">
-<pre class="rouge highlight"><code data-lang="java"><span class="nc">Unresolved</span> <span class="n">directive</span> <span class="n">in</span> <span class="n">index</span><span class="o">.</span><span class="na">adoc</span> <span class="o">-</span> <span class="nl">include:</span><span class="o">:../../</span><span class="n">mutiny</span><span class="o">-</span><span class="n">demo</span><span class="o">/</span><span class="n">src</span><span class="o">/</span><span class="n">main</span><span class="o">/</span><span class="n">java</span><span class="o">/</span><span class="n">at</span><span class="o">/</span><span class="n">htl</span><span class="o">/</span><span class="n">feature</span><span class="o">/</span><span class="n">user</span><span class="o">/</span><span class="nc">UserResource</span><span class="o">.</span><span class="na">java</span><span class="o">[</span><span class="n">tag</span><span class="o">=</span><span class="n">create</span><span class="o">]</span></code></pre>
+<pre class="rouge highlight"><code data-lang="java"><span class="nd">@POST</span>
+<span class="nd">@Produces</span><span class="o">(</span><span class="nc">MediaType</span><span class="o">.</span><span class="na">APPLICATION_JSON</span><span class="o">)</span>
+<span class="nd">@Consumes</span><span class="o">(</span><span class="nc">MediaType</span><span class="o">.</span><span class="na">APPLICATION_JSON</span><span class="o">)</span>
+<span class="nd">@WithTransaction</span> <i class="conum" data-value="1"></i><b>(1)</b>
+<span class="kd">public</span> <span class="nc">Uni</span><span class="o">&lt;</span><span class="nc">Response</span><span class="o">&gt;</span> <span class="nf">createNew</span><span class="o">(</span><span class="nc">User</span> <span class="n">user</span><span class="o">,</span> <span class="nd">@Context</span> <span class="nc">UriInfo</span> <span class="n">uriInfo</span><span class="o">)</span> <span class="o">{</span> <i class="conum" data-value="2"></i><b>(2)</b>
+    <span class="k">return</span> <span class="nc">Uni</span><span class="o">.</span><span class="na">createFrom</span><span class="o">()</span>
+            <span class="o">.</span><span class="na">item</span><span class="o">(</span><span class="n">user</span><span class="o">)</span> <i class="conum" data-value="3"></i><b>(3)</b>
+            <span class="o">.</span><span class="na">onItem</span><span class="o">().</span><span class="na">ifNull</span><span class="o">().</span><span class="na">failWith</span><span class="o">(</span><span class="k">new</span> <span class="nc">WebApplicationException</span><span class="o">(</span><span class="nc">Response</span><span class="o">.</span><span class="na">Status</span><span class="o">.</span><span class="na">BAD_REQUEST</span><span class="o">))</span> <i class="conum" data-value="4"></i><b>(4)</b>
+            <span class="o">.</span><span class="na">onItem</span><span class="o">().</span><span class="na">ifNotNull</span><span class="o">().</span><span class="na">transformToUni</span><span class="o">(</span><span class="n">ignored</span> <span class="o">-&gt;</span> <span class="n">userRepository</span><span class="o">.</span><span class="na">persistAndFlush</span><span class="o">(</span><span class="n">user</span><span class="o">))</span> <i class="conum" data-value="5"></i><b>(5)</b>
+            <span class="o">.</span><span class="na">onItem</span><span class="o">().</span><span class="na">transform</span><span class="o">(</span><span class="n">u</span> <span class="o">-&gt;</span> <span class="o">{</span> <i class="conum" data-value="6"></i><b>(6)</b>
+                <span class="no">URI</span> <span class="n">uri</span> <span class="o">=</span> <span class="n">uriInfo</span>
+                        <span class="o">.</span><span class="na">getAbsolutePathBuilder</span><span class="o">()</span>
+                        <span class="o">.</span><span class="na">path</span><span class="o">(</span><span class="nc">Long</span><span class="o">.</span><span class="na">toString</span><span class="o">(</span><span class="n">u</span><span class="o">.</span><span class="na">getId</span><span class="o">()))</span>
+                        <span class="o">.</span><span class="na">build</span><span class="o">();</span>
+
+                <span class="k">return</span> <span class="nc">Response</span>
+                        <span class="o">.</span><span class="na">created</span><span class="o">(</span><span class="n">uri</span><span class="o">)</span>
+                        <span class="o">.</span><span class="na">entity</span><span class="o">(</span><span class="n">u</span><span class="o">)</span>
+                        <span class="o">.</span><span class="na">build</span><span class="o">();</span>
+            <span class="o">});</span>
+<span class="o">}</span></code></pre>
 </div>
 </div></div></td>
 </tr>
@@ -1200,7 +1278,29 @@ Eine Quelle veröffentlicht nur dann Events, wenn sie von einem <strong>Subscrib
 <tr>
 <td class="tableblock halign-left valign-top"><div class="content"><div class="listingblock">
 <div class="content">
-<pre class="rouge highlight"><code data-lang="java"><span class="nc">Unresolved</span> <span class="n">directive</span> <span class="n">in</span> <span class="n">index</span><span class="o">.</span><span class="na">adoc</span> <span class="o">-</span> <span class="nl">include:</span><span class="o">:../../</span><span class="n">classic</span><span class="o">-</span><span class="n">demo</span><span class="o">/</span><span class="n">src</span><span class="o">/</span><span class="n">main</span><span class="o">/</span><span class="n">java</span><span class="o">/</span><span class="n">at</span><span class="o">/</span><span class="n">htl</span><span class="o">/</span><span class="n">feature</span><span class="o">/</span><span class="n">user</span><span class="o">/</span><span class="nc">UserResource</span><span class="o">.</span><span class="na">java</span><span class="o">[</span><span class="n">tag</span><span class="o">=</span><span class="n">create_classic</span><span class="o">]</span></code></pre>
+<pre class="rouge highlight"><code data-lang="java"><span class="nd">@POST</span>
+<span class="nd">@Produces</span><span class="o">(</span><span class="nc">MediaType</span><span class="o">.</span><span class="na">APPLICATION_JSON</span><span class="o">)</span>
+<span class="nd">@Consumes</span><span class="o">(</span><span class="nc">MediaType</span><span class="o">.</span><span class="na">APPLICATION_JSON</span><span class="o">)</span>
+<span class="nd">@Transactional</span>
+<span class="kd">public</span> <span class="nc">Response</span> <span class="nf">createNew</span><span class="o">(</span><span class="nc">User</span> <span class="n">user</span><span class="o">,</span> <span class="nd">@Context</span> <span class="nc">UriInfo</span> <span class="n">uriInfo</span><span class="o">)</span> <span class="o">{</span>
+    <span class="k">if</span> <span class="o">(</span><span class="n">user</span> <span class="o">==</span> <span class="kc">null</span><span class="o">)</span> <span class="o">{</span>
+        <span class="k">return</span> <span class="nc">Response</span><span class="o">.</span><span class="na">status</span><span class="o">(</span><span class="nc">Response</span><span class="o">.</span><span class="na">Status</span><span class="o">.</span><span class="na">BAD_REQUEST</span><span class="o">).</span><span class="na">build</span><span class="o">();</span>
+    <span class="o">}</span>
+
+    <span class="c1">// = Blocking =</span>
+    <span class="n">userRepository</span><span class="o">.</span><span class="na">persistAndFlush</span><span class="o">(</span><span class="n">user</span><span class="o">);</span>
+    <span class="c1">// = Blocking =</span>
+
+    <span class="no">URI</span> <span class="n">uri</span> <span class="o">=</span> <span class="n">uriInfo</span>
+            <span class="o">.</span><span class="na">getAbsolutePathBuilder</span><span class="o">()</span>
+            <span class="o">.</span><span class="na">path</span><span class="o">(</span><span class="nc">Long</span><span class="o">.</span><span class="na">toString</span><span class="o">(</span><span class="n">user</span><span class="o">.</span><span class="na">getId</span><span class="o">()))</span>
+            <span class="o">.</span><span class="na">build</span><span class="o">();</span>
+
+    <span class="k">return</span> <span class="nc">Response</span>
+            <span class="o">.</span><span class="na">created</span><span class="o">(</span><span class="n">uri</span><span class="o">)</span>
+            <span class="o">.</span><span class="na">entity</span><span class="o">(</span><span class="n">user</span><span class="o">)</span>
+            <span class="o">.</span><span class="na">build</span><span class="o">();</span>
+<span class="o">}</span></code></pre>
 </div>
 </div></div></td>
 </tr>
@@ -1337,7 +1437,93 @@ Die erstellten Nutzer werden in der Datenbank gespeichert. Bei <code>read</code>
 <div class="content">
 <div class="listingblock">
 <div class="content">
-<pre class="rouge highlight"><code data-lang="java"><span class="nc">Unresolved</span> <span class="n">directive</span> <span class="n">in</span> <span class="n">index</span><span class="o">.</span><span class="na">adoc</span> <span class="o">-</span> <span class="nl">include:</span><span class="o">:../../</span><span class="n">mutiny</span><span class="o">-</span><span class="n">demo</span><span class="o">/</span><span class="n">src</span><span class="o">/</span><span class="n">main</span><span class="o">/</span><span class="n">java</span><span class="o">/</span><span class="n">at</span><span class="o">/</span><span class="n">htl</span><span class="o">/</span><span class="n">feature</span><span class="o">/</span><span class="n">user</span><span class="o">/</span><span class="nc">User</span><span class="o">.</span><span class="na">java</span><span class="o">[]</span></code></pre>
+<pre class="rouge highlight"><code data-lang="java"><span class="kn">package</span> <span class="nn">at.htl.feature.user</span><span class="o">;</span>
+
+<span class="kn">import</span> <span class="nn">jakarta.persistence.*</span><span class="o">;</span>
+
+<span class="kn">import</span> <span class="nn">java.time.LocalDate</span><span class="o">;</span>
+
+<span class="nd">@Entity</span>
+<span class="nd">@Table</span><span class="o">(</span><span class="n">name</span> <span class="o">=</span> <span class="s">"MD_USER"</span><span class="o">)</span>
+<span class="kd">public</span> <span class="kd">class</span> <span class="nc">User</span> <span class="o">{</span>
+    <span class="nd">@Id</span>
+    <span class="nd">@GeneratedValue</span><span class="o">(</span><span class="n">strategy</span> <span class="o">=</span> <span class="nc">GenerationType</span><span class="o">.</span><span class="na">SEQUENCE</span><span class="o">)</span>
+    <span class="kd">private</span> <span class="nc">Long</span> <span class="n">id</span><span class="o">;</span>
+
+    <span class="nd">@Column</span><span class="o">(</span><span class="n">name</span> <span class="o">=</span> <span class="s">"u_firstname"</span><span class="o">,</span> <span class="n">nullable</span> <span class="o">=</span> <span class="kc">false</span><span class="o">)</span>
+    <span class="kd">private</span> <span class="nc">String</span> <span class="n">firstName</span><span class="o">;</span>
+
+    <span class="nd">@Column</span><span class="o">(</span><span class="n">name</span> <span class="o">=</span> <span class="s">"u_lastname"</span><span class="o">,</span> <span class="n">nullable</span> <span class="o">=</span> <span class="kc">false</span><span class="o">)</span>
+    <span class="kd">private</span> <span class="nc">String</span> <span class="n">lastName</span><span class="o">;</span>
+
+    <span class="nd">@Column</span><span class="o">(</span><span class="n">name</span> <span class="o">=</span><span class="s">"u_email"</span><span class="o">,</span> <span class="n">nullable</span> <span class="o">=</span> <span class="kc">false</span><span class="o">)</span>
+    <span class="kd">private</span> <span class="nc">String</span> <span class="n">email</span><span class="o">;</span>
+
+    <span class="nd">@Column</span><span class="o">(</span><span class="n">name</span> <span class="o">=</span><span class="s">"u_date_of_birth"</span><span class="o">,</span> <span class="n">nullable</span> <span class="o">=</span> <span class="kc">false</span><span class="o">)</span>
+    <span class="kd">private</span> <span class="nc">LocalDate</span> <span class="n">dateOfBirth</span><span class="o">;</span>
+
+    <span class="nd">@Column</span><span class="o">(</span><span class="n">name</span> <span class="o">=</span> <span class="s">"u_address"</span><span class="o">,</span> <span class="n">nullable</span> <span class="o">=</span> <span class="kc">false</span><span class="o">)</span>
+    <span class="kd">private</span> <span class="nc">String</span> <span class="n">address</span><span class="o">;</span>
+
+    <span class="kd">public</span> <span class="nf">User</span><span class="o">()</span> <span class="o">{</span>
+    <span class="o">}</span>
+
+    <span class="kd">public</span> <span class="nf">User</span><span class="o">(</span><span class="nc">String</span> <span class="n">firstName</span><span class="o">,</span> <span class="nc">String</span> <span class="n">lastName</span><span class="o">,</span> <span class="nc">String</span> <span class="n">email</span><span class="o">,</span> <span class="nc">LocalDate</span> <span class="n">dateOfBirth</span><span class="o">,</span> <span class="nc">String</span> <span class="n">address</span><span class="o">)</span> <span class="o">{</span>
+        <span class="k">this</span><span class="o">.</span><span class="na">firstName</span> <span class="o">=</span> <span class="n">firstName</span><span class="o">;</span>
+        <span class="k">this</span><span class="o">.</span><span class="na">lastName</span> <span class="o">=</span> <span class="n">lastName</span><span class="o">;</span>
+        <span class="k">this</span><span class="o">.</span><span class="na">email</span> <span class="o">=</span> <span class="n">email</span><span class="o">;</span>
+        <span class="k">this</span><span class="o">.</span><span class="na">dateOfBirth</span> <span class="o">=</span> <span class="n">dateOfBirth</span><span class="o">;</span>
+        <span class="k">this</span><span class="o">.</span><span class="na">address</span> <span class="o">=</span> <span class="n">address</span><span class="o">;</span>
+    <span class="o">}</span>
+
+    <span class="kd">public</span> <span class="nc">Long</span> <span class="nf">getId</span><span class="o">()</span> <span class="o">{</span>
+        <span class="k">return</span> <span class="n">id</span><span class="o">;</span>
+    <span class="o">}</span>
+
+    <span class="kd">public</span> <span class="kt">void</span> <span class="nf">setId</span><span class="o">(</span><span class="nc">Long</span> <span class="n">id</span><span class="o">)</span> <span class="o">{</span>
+        <span class="k">this</span><span class="o">.</span><span class="na">id</span> <span class="o">=</span> <span class="n">id</span><span class="o">;</span>
+    <span class="o">}</span>
+
+    <span class="kd">public</span> <span class="nc">String</span> <span class="nf">getFirstName</span><span class="o">()</span> <span class="o">{</span>
+        <span class="k">return</span> <span class="n">firstName</span><span class="o">;</span>
+    <span class="o">}</span>
+
+    <span class="kd">public</span> <span class="kt">void</span> <span class="nf">setFirstName</span><span class="o">(</span><span class="nc">String</span> <span class="n">firstName</span><span class="o">)</span> <span class="o">{</span>
+        <span class="k">this</span><span class="o">.</span><span class="na">firstName</span> <span class="o">=</span> <span class="n">firstName</span><span class="o">;</span>
+    <span class="o">}</span>
+
+    <span class="kd">public</span> <span class="nc">String</span> <span class="nf">getLastName</span><span class="o">()</span> <span class="o">{</span>
+        <span class="k">return</span> <span class="n">lastName</span><span class="o">;</span>
+    <span class="o">}</span>
+
+    <span class="kd">public</span> <span class="kt">void</span> <span class="nf">setLastName</span><span class="o">(</span><span class="nc">String</span> <span class="n">lastName</span><span class="o">)</span> <span class="o">{</span>
+        <span class="k">this</span><span class="o">.</span><span class="na">lastName</span> <span class="o">=</span> <span class="n">lastName</span><span class="o">;</span>
+    <span class="o">}</span>
+
+    <span class="kd">public</span> <span class="nc">String</span> <span class="nf">getEmail</span><span class="o">()</span> <span class="o">{</span>
+        <span class="k">return</span> <span class="n">email</span><span class="o">;</span>
+    <span class="o">}</span>
+
+    <span class="kd">public</span> <span class="kt">void</span> <span class="nf">setEmail</span><span class="o">(</span><span class="nc">String</span> <span class="n">email</span><span class="o">)</span> <span class="o">{</span>
+        <span class="k">this</span><span class="o">.</span><span class="na">email</span> <span class="o">=</span> <span class="n">email</span><span class="o">;</span>
+    <span class="o">}</span>
+
+    <span class="kd">public</span> <span class="nc">LocalDate</span> <span class="nf">getDateOfBirth</span><span class="o">()</span> <span class="o">{</span>
+        <span class="k">return</span> <span class="n">dateOfBirth</span><span class="o">;</span>
+    <span class="o">}</span>
+
+    <span class="kd">public</span> <span class="kt">void</span> <span class="nf">setDateOfBirth</span><span class="o">(</span><span class="nc">LocalDate</span> <span class="n">dateOfBirth</span><span class="o">)</span> <span class="o">{</span>
+        <span class="k">this</span><span class="o">.</span><span class="na">dateOfBirth</span> <span class="o">=</span> <span class="n">dateOfBirth</span><span class="o">;</span>
+    <span class="o">}</span>
+
+    <span class="kd">public</span> <span class="nc">String</span> <span class="nf">getAddress</span><span class="o">()</span> <span class="o">{</span>
+        <span class="k">return</span> <span class="n">address</span><span class="o">;</span>
+    <span class="o">}</span>
+
+    <span class="kd">public</span> <span class="kt">void</span> <span class="nf">setAddress</span><span class="o">(</span><span class="nc">String</span> <span class="n">address</span><span class="o">)</span> <span class="o">{</span>
+        <span class="k">this</span><span class="o">.</span><span class="na">address</span> <span class="o">=</span> <span class="n">address</span><span class="o">;</span>
+    <span class="o">}</span>
+<span class="o">}</span></code></pre>
 </div>
 </div>
 </div>
@@ -1347,7 +1533,15 @@ Die erstellten Nutzer werden in der Datenbank gespeichert. Bei <code>read</code>
 <div class="content">
 <div class="listingblock">
 <div class="content">
-<pre class="rouge highlight"><code data-lang="java"><span class="nc">Unresolved</span> <span class="n">directive</span> <span class="n">in</span> <span class="n">index</span><span class="o">.</span><span class="na">adoc</span> <span class="o">-</span> <span class="nl">include:</span><span class="o">:../../</span><span class="n">mutiny</span><span class="o">-</span><span class="n">demo</span><span class="o">/</span><span class="n">src</span><span class="o">/</span><span class="n">main</span><span class="o">/</span><span class="n">java</span><span class="o">/</span><span class="n">at</span><span class="o">/</span><span class="n">htl</span><span class="o">/</span><span class="n">feature</span><span class="o">/</span><span class="n">user</span><span class="o">/</span><span class="nc">UserDto</span><span class="o">.</span><span class="na">java</span><span class="o">[]</span></code></pre>
+<pre class="rouge highlight"><code data-lang="java"><span class="kn">package</span> <span class="nn">at.htl.feature.user</span><span class="o">;</span>
+
+<span class="kd">public</span> <span class="n">record</span> <span class="nf">UserDto</span><span class="o">(</span>
+    <span class="nc">Long</span> <span class="n">id</span><span class="o">,</span>
+    <span class="nc">String</span> <span class="n">firstname</span><span class="o">,</span>
+    <span class="nc">String</span> <span class="n">lastname</span><span class="o">,</span>
+    <span class="nc">String</span> <span class="n">email</span>
+<span class="o">)</span> <span class="o">{</span>
+<span class="o">}</span></code></pre>
 </div>
 </div>
 </div>
@@ -1396,7 +1590,12 @@ Die erstellten Nutzer werden in der Datenbank gespeichert. Bei <code>read</code>
 <div class="listingblock">
 <div class="title">application.properties</div>
 <div class="content">
-<pre class="rouge highlight"><code data-lang="properties"><span class="err">Unresolved</span> <span class="err">directive</span> <span class="err">in</span> <span class="err">index.adoc</span> <span class="err">-</span> <span class="py">include</span><span class="p">:</span><span class="s">:../../classic-demo/src/main/resources/application.properties[]</span></code></pre>
+<pre class="rouge highlight"><code data-lang="properties"><span class="py">quarkus.datasource.db-kind</span> <span class="p">=</span> <span class="s">postgresql</span>
+<span class="py">quarkus.datasource.username</span> <span class="p">=</span> <span class="s">app</span>
+<span class="py">quarkus.datasource.password</span> <span class="p">=</span> <span class="s">app</span>
+<span class="hll"><span class="py">quarkus.datasource.jdbc.url</span> <span class="p">=</span> <span class="s">jdbc:postgresql://localhost:5432/db</span>
+</span>
+<span class="err">%</span><span class="py">dev.quarkus.hibernate-orm.database.generation</span><span class="p">=</span><span class="s">drop-and-create</span></code></pre>
 </div>
 </div>
 <div class="paragraph">
@@ -1410,7 +1609,14 @@ Die erstellten Nutzer werden in der Datenbank gespeichert. Bei <code>read</code>
 <div class="content">
 <div class="listingblock">
 <div class="content">
-<pre class="rouge highlight"><code data-lang="java"><span class="nc">Unresolved</span> <span class="n">directive</span> <span class="n">in</span> <span class="n">index</span><span class="o">.</span><span class="na">adoc</span> <span class="o">-</span> <span class="nl">include:</span><span class="o">:../../</span><span class="n">classic</span><span class="o">-</span><span class="n">demo</span><span class="o">/</span><span class="n">src</span><span class="o">/</span><span class="n">main</span><span class="o">/</span><span class="n">java</span><span class="o">/</span><span class="n">at</span><span class="o">/</span><span class="n">htl</span><span class="o">/</span><span class="n">feature</span><span class="o">/</span><span class="n">user</span><span class="o">/</span><span class="nc">UserRepository</span><span class="o">.</span><span class="na">java</span><span class="o">[]</span></code></pre>
+<pre class="rouge highlight"><code data-lang="java"><span class="kn">package</span> <span class="nn">at.htl.feature.user</span><span class="o">;</span>
+
+<span class="kn">import</span> <span class="nn">io.quarkus.hibernate.orm.panache.PanacheRepository</span><span class="o">;</span>
+<span class="kn">import</span> <span class="nn">jakarta.enterprise.context.ApplicationScoped</span><span class="o">;</span>
+
+<span class="nd">@ApplicationScoped</span>
+<span class="kd">public</span> <span class="kd">class</span> <span class="nc">UserRepository</span> <span class="kd">implements</span> <span class="nc">PanacheRepository</span><span class="o">&lt;</span><span class="nc">User</span><span class="o">&gt;</span> <span class="o">{</span>
+<span class="o">}</span></code></pre>
 </div>
 </div>
 </div>
@@ -1420,7 +1626,83 @@ Die erstellten Nutzer werden in der Datenbank gespeichert. Bei <code>read</code>
 <div class="content">
 <div class="listingblock">
 <div class="content">
-<pre class="rouge highlight"><code data-lang="java"><span class="nc">Unresolved</span> <span class="n">directive</span> <span class="n">in</span> <span class="n">index</span><span class="o">.</span><span class="na">adoc</span> <span class="o">-</span> <span class="nl">include:</span><span class="o">:../../</span><span class="n">classic</span><span class="o">-</span><span class="n">demo</span><span class="o">/</span><span class="n">src</span><span class="o">/</span><span class="n">main</span><span class="o">/</span><span class="n">java</span><span class="o">/</span><span class="n">at</span><span class="o">/</span><span class="n">htl</span><span class="o">/</span><span class="n">feature</span><span class="o">/</span><span class="n">user</span><span class="o">/</span><span class="nc">UserResource</span><span class="o">.</span><span class="na">java</span><span class="o">[]</span></code></pre>
+<pre class="rouge highlight"><code data-lang="java"><span class="kn">package</span> <span class="nn">at.htl.feature.user</span><span class="o">;</span>
+
+<span class="kn">import</span> <span class="nn">io.smallrye.mutiny.Uni</span><span class="o">;</span>
+<span class="kn">import</span> <span class="nn">jakarta.inject.Inject</span><span class="o">;</span>
+<span class="kn">import</span> <span class="nn">jakarta.transaction.Transactional</span><span class="o">;</span>
+<span class="kn">import</span> <span class="nn">jakarta.ws.rs.*</span><span class="o">;</span>
+<span class="kn">import</span> <span class="nn">jakarta.ws.rs.core.Context</span><span class="o">;</span>
+<span class="kn">import</span> <span class="nn">jakarta.ws.rs.core.MediaType</span><span class="o">;</span>
+<span class="kn">import</span> <span class="nn">jakarta.ws.rs.core.Response</span><span class="o">;</span>
+<span class="kn">import</span> <span class="nn">jakarta.ws.rs.core.UriInfo</span><span class="o">;</span>
+
+<span class="kn">import</span> <span class="nn">java.net.URI</span><span class="o">;</span>
+<span class="kn">import</span> <span class="nn">java.util.List</span><span class="o">;</span>
+
+<span class="nd">@Path</span><span class="o">(</span><span class="s">"/user"</span><span class="o">)</span>
+<span class="kd">public</span> <span class="kd">class</span> <span class="nc">UserResource</span> <span class="o">{</span>
+    <span class="nd">@Inject</span>
+    <span class="nc">UserRepository</span> <span class="n">userRepository</span><span class="o">;</span>
+
+    <span class="nd">@GET</span>
+    <span class="nd">@Produces</span><span class="o">(</span><span class="nc">MediaType</span><span class="o">.</span><span class="na">APPLICATION_JSON</span><span class="o">)</span>
+    <span class="kd">public</span> <span class="nc">List</span><span class="o">&lt;</span><span class="nc">UserDto</span><span class="o">&gt;</span> <span class="nf">getAll</span><span class="o">()</span> <span class="o">{</span>
+        <span class="k">return</span> <span class="n">userRepository</span><span class="o">.</span><span class="na">listAll</span><span class="o">()</span>
+                <span class="o">.</span><span class="na">stream</span><span class="o">()</span>
+                <span class="o">.</span><span class="na">map</span><span class="o">(</span><span class="n">user</span> <span class="o">-&gt;</span> <span class="k">new</span> <span class="nc">UserDto</span><span class="o">(</span>
+                        <span class="n">user</span><span class="o">.</span><span class="na">getId</span><span class="o">(),</span>
+                        <span class="n">user</span><span class="o">.</span><span class="na">getFirstName</span><span class="o">(),</span>
+                        <span class="n">user</span><span class="o">.</span><span class="na">getLastName</span><span class="o">(),</span>
+                        <span class="n">user</span><span class="o">.</span><span class="na">getEmail</span><span class="o">()</span>
+                <span class="o">))</span>
+                <span class="o">.</span><span class="na">toList</span><span class="o">();</span>
+    <span class="o">}</span>
+
+    <span class="c1">// tag::get_simple_classic[]</span>
+    <span class="nd">@GET</span>
+    <span class="nd">@Path</span><span class="o">(</span><span class="s">"{id}"</span><span class="o">)</span>
+    <span class="nd">@Produces</span><span class="o">(</span><span class="nc">MediaType</span><span class="o">.</span><span class="na">APPLICATION_JSON</span><span class="o">)</span>
+    <span class="kd">public</span> <span class="nc">UserDto</span> <span class="nf">getById</span><span class="o">(</span><span class="nd">@PathParam</span><span class="o">(</span><span class="s">"id"</span><span class="o">)</span> <span class="nc">Long</span> <span class="n">id</span><span class="o">)</span> <span class="o">{</span>
+        <span class="c1">// = Blocking=</span>
+        <span class="nc">User</span> <span class="n">user</span> <span class="o">=</span> <span class="n">userRepository</span><span class="o">.</span><span class="na">findById</span><span class="o">(</span><span class="n">id</span><span class="o">);</span>
+        <span class="c1">// = Blocking =</span>
+
+        <span class="k">return</span> <span class="k">new</span> <span class="nf">UserDto</span><span class="o">(</span>
+                        <span class="n">user</span><span class="o">.</span><span class="na">getId</span><span class="o">(),</span>
+                        <span class="n">user</span><span class="o">.</span><span class="na">getFirstName</span><span class="o">(),</span>
+                        <span class="n">user</span><span class="o">.</span><span class="na">getLastName</span><span class="o">(),</span>
+                        <span class="n">user</span><span class="o">.</span><span class="na">getEmail</span><span class="o">()</span>
+        <span class="o">);</span>
+    <span class="o">}</span>
+    <span class="c1">// end::get_simple_classic[]</span>
+
+    <span class="c1">// tag::create_classic[]</span>
+    <span class="nd">@POST</span>
+    <span class="nd">@Produces</span><span class="o">(</span><span class="nc">MediaType</span><span class="o">.</span><span class="na">APPLICATION_JSON</span><span class="o">)</span>
+    <span class="nd">@Consumes</span><span class="o">(</span><span class="nc">MediaType</span><span class="o">.</span><span class="na">APPLICATION_JSON</span><span class="o">)</span>
+    <span class="nd">@Transactional</span>
+    <span class="kd">public</span> <span class="nc">Response</span> <span class="nf">createNew</span><span class="o">(</span><span class="nc">User</span> <span class="n">user</span><span class="o">,</span> <span class="nd">@Context</span> <span class="nc">UriInfo</span> <span class="n">uriInfo</span><span class="o">)</span> <span class="o">{</span>
+        <span class="k">if</span> <span class="o">(</span><span class="n">user</span> <span class="o">==</span> <span class="kc">null</span><span class="o">)</span> <span class="o">{</span>
+            <span class="k">return</span> <span class="nc">Response</span><span class="o">.</span><span class="na">status</span><span class="o">(</span><span class="nc">Response</span><span class="o">.</span><span class="na">Status</span><span class="o">.</span><span class="na">BAD_REQUEST</span><span class="o">).</span><span class="na">build</span><span class="o">();</span>
+        <span class="o">}</span>
+
+        <span class="c1">// = Blocking =</span>
+        <span class="n">userRepository</span><span class="o">.</span><span class="na">persistAndFlush</span><span class="o">(</span><span class="n">user</span><span class="o">);</span>
+        <span class="c1">// = Blocking =</span>
+
+        <span class="no">URI</span> <span class="n">uri</span> <span class="o">=</span> <span class="n">uriInfo</span>
+                <span class="o">.</span><span class="na">getAbsolutePathBuilder</span><span class="o">()</span>
+                <span class="o">.</span><span class="na">path</span><span class="o">(</span><span class="nc">Long</span><span class="o">.</span><span class="na">toString</span><span class="o">(</span><span class="n">user</span><span class="o">.</span><span class="na">getId</span><span class="o">()))</span>
+                <span class="o">.</span><span class="na">build</span><span class="o">();</span>
+
+        <span class="k">return</span> <span class="nc">Response</span>
+                <span class="o">.</span><span class="na">created</span><span class="o">(</span><span class="n">uri</span><span class="o">)</span>
+                <span class="o">.</span><span class="na">entity</span><span class="o">(</span><span class="n">user</span><span class="o">)</span>
+                <span class="o">.</span><span class="na">build</span><span class="o">();</span>
+    <span class="o">}</span>
+    <span class="c1">// end::create_classic[]</span>
+<span class="o">}</span></code></pre>
 </div>
 </div>
 </div>
@@ -1457,7 +1739,12 @@ Die erstellten Nutzer werden in der Datenbank gespeichert. Bei <code>read</code>
 <div class="listingblock">
 <div class="title">application.properties</div>
 <div class="content">
-<pre class="rouge highlight"><code data-lang="properties"><span class="err">Unresolved</span> <span class="err">directive</span> <span class="err">in</span> <span class="err">index.adoc</span> <span class="err">-</span> <span class="py">include</span><span class="p">:</span><span class="s">:../../mutiny-demo/src/main/resources/application.properties[]</span></code></pre>
+<pre class="rouge highlight"><code data-lang="properties"><span class="py">quarkus.datasource.db-kind</span> <span class="p">=</span> <span class="s">postgresql</span>
+<span class="py">quarkus.datasource.username</span> <span class="p">=</span> <span class="s">app</span>
+<span class="py">quarkus.datasource.password</span> <span class="p">=</span> <span class="s">app</span>
+<span class="hll"><span class="py">quarkus.datasource.reactive.url</span> <span class="p">=</span> <span class="s">vertx-reactive:postgresql://localhost:5432/db</span>
+</span>
+<span class="err">%</span><span class="py">dev.quarkus.hibernate-orm.database.generation</span><span class="p">=</span><span class="s">drop-and-create</span></code></pre>
 </div>
 </div>
 <div class="paragraph">
@@ -1471,7 +1758,14 @@ Die erstellten Nutzer werden in der Datenbank gespeichert. Bei <code>read</code>
 <div class="content">
 <div class="listingblock">
 <div class="content">
-<pre class="rouge highlight"><code data-lang="java"><span class="nc">Unresolved</span> <span class="n">directive</span> <span class="n">in</span> <span class="n">index</span><span class="o">.</span><span class="na">adoc</span> <span class="o">-</span> <span class="nl">include:</span><span class="o">:../../</span><span class="n">mutiny</span><span class="o">-</span><span class="n">demo</span><span class="o">/</span><span class="n">src</span><span class="o">/</span><span class="n">main</span><span class="o">/</span><span class="n">java</span><span class="o">/</span><span class="n">at</span><span class="o">/</span><span class="n">htl</span><span class="o">/</span><span class="n">feature</span><span class="o">/</span><span class="n">user</span><span class="o">/</span><span class="nc">UserRepository</span><span class="o">.</span><span class="na">java</span><span class="o">[]</span></code></pre>
+<pre class="rouge highlight"><code data-lang="java"><span class="kn">package</span> <span class="nn">at.htl.feature.user</span><span class="o">;</span>
+
+<span class="kn">import</span> <span class="nn">io.quarkus.hibernate.reactive.panache.PanacheRepository</span><span class="o">;</span>
+<span class="kn">import</span> <span class="nn">jakarta.enterprise.context.ApplicationScoped</span><span class="o">;</span>
+
+<span class="nd">@ApplicationScoped</span>
+<span class="kd">public</span> <span class="kd">class</span> <span class="nc">UserRepository</span> <span class="kd">implements</span> <span class="nc">PanacheRepository</span><span class="o">&lt;</span><span class="nc">User</span><span class="o">&gt;</span> <span class="o">{</span>
+<span class="o">}</span></code></pre>
 </div>
 </div>
 </div>
@@ -1481,7 +1775,84 @@ Die erstellten Nutzer werden in der Datenbank gespeichert. Bei <code>read</code>
 <div class="content">
 <div class="listingblock">
 <div class="content">
-<pre class="rouge highlight"><code data-lang="java"><span class="nc">Unresolved</span> <span class="n">directive</span> <span class="n">in</span> <span class="n">index</span><span class="o">.</span><span class="na">adoc</span> <span class="o">-</span> <span class="nl">include:</span><span class="o">:../../</span><span class="n">mutiny</span><span class="o">-</span><span class="n">demo</span><span class="o">/</span><span class="n">src</span><span class="o">/</span><span class="n">main</span><span class="o">/</span><span class="n">java</span><span class="o">/</span><span class="n">at</span><span class="o">/</span><span class="n">htl</span><span class="o">/</span><span class="n">feature</span><span class="o">/</span><span class="n">user</span><span class="o">/</span><span class="nc">UserResource</span><span class="o">.</span><span class="na">java</span><span class="o">[]</span></code></pre>
+<pre class="rouge highlight"><code data-lang="java"><span class="kn">package</span> <span class="nn">at.htl.feature.user</span><span class="o">;</span>
+
+<span class="kn">import</span> <span class="nn">io.quarkus.hibernate.reactive.panache.Panache</span><span class="o">;</span>
+<span class="kn">import</span> <span class="nn">io.quarkus.hibernate.reactive.panache.common.WithSession</span><span class="o">;</span>
+<span class="kn">import</span> <span class="nn">io.quarkus.hibernate.reactive.panache.common.WithTransaction</span><span class="o">;</span>
+<span class="kn">import</span> <span class="nn">io.smallrye.mutiny.Uni</span><span class="o">;</span>
+<span class="kn">import</span> <span class="nn">jakarta.inject.Inject</span><span class="o">;</span>
+<span class="kn">import</span> <span class="nn">jakarta.ws.rs.*</span><span class="o">;</span>
+<span class="kn">import</span> <span class="nn">jakarta.ws.rs.core.Context</span><span class="o">;</span>
+<span class="kn">import</span> <span class="nn">jakarta.ws.rs.core.MediaType</span><span class="o">;</span>
+<span class="kn">import</span> <span class="nn">jakarta.ws.rs.core.Response</span><span class="o">;</span>
+<span class="kn">import</span> <span class="nn">jakarta.ws.rs.core.UriInfo</span><span class="o">;</span>
+
+<span class="kn">import</span> <span class="nn">java.net.URI</span><span class="o">;</span>
+<span class="kn">import</span> <span class="nn">java.util.List</span><span class="o">;</span>
+
+<span class="nd">@Path</span><span class="o">(</span><span class="s">"/user"</span><span class="o">)</span>
+<span class="kd">public</span> <span class="kd">class</span> <span class="nc">UserResource</span> <span class="o">{</span>
+    <span class="nd">@Inject</span>
+    <span class="nc">UserRepository</span> <span class="n">userRepository</span><span class="o">;</span>
+
+    <span class="nd">@GET</span>
+    <span class="nd">@Produces</span><span class="o">(</span><span class="nc">MediaType</span><span class="o">.</span><span class="na">APPLICATION_JSON</span><span class="o">)</span>
+    <span class="nd">@WithSession</span>
+    <span class="kd">public</span> <span class="nc">Uni</span><span class="o">&lt;</span><span class="nc">List</span><span class="o">&lt;</span><span class="nc">UserDto</span><span class="o">&gt;&gt;</span> <span class="nf">getAll</span><span class="o">()</span> <span class="o">{</span>
+        <span class="k">return</span> <span class="n">userRepository</span><span class="o">.</span><span class="na">listAll</span><span class="o">()</span>
+                <span class="o">.</span><span class="na">onItem</span><span class="o">().</span><span class="na">transform</span><span class="o">(</span><span class="n">users</span> <span class="o">-&gt;</span>
+                        <span class="n">users</span>
+                                <span class="o">.</span><span class="na">stream</span><span class="o">()</span>
+                                <span class="o">.</span><span class="na">map</span><span class="o">(</span><span class="n">user</span> <span class="o">-&gt;</span> <span class="k">new</span> <span class="nc">UserDto</span><span class="o">(</span>
+                                        <span class="n">user</span><span class="o">.</span><span class="na">getId</span><span class="o">(),</span>
+                                        <span class="n">user</span><span class="o">.</span><span class="na">getFirstName</span><span class="o">(),</span>
+                                        <span class="n">user</span><span class="o">.</span><span class="na">getLastName</span><span class="o">(),</span>
+                                        <span class="n">user</span><span class="o">.</span><span class="na">getEmail</span><span class="o">())</span>
+                                <span class="o">).</span><span class="na">toList</span><span class="o">()</span>
+                <span class="o">);</span>
+    <span class="o">}</span>
+
+    <span class="c1">// tag::get_simple[]</span>
+    <span class="nd">@GET</span>
+    <span class="nd">@Path</span><span class="o">(</span><span class="s">"{id}"</span><span class="o">)</span>
+    <span class="nd">@Produces</span><span class="o">(</span><span class="nc">MediaType</span><span class="o">.</span><span class="na">APPLICATION_JSON</span><span class="o">)</span>
+    <span class="nd">@WithSession</span> <i class="conum" data-value="1"></i><b>(1)</b>
+    <span class="kd">public</span> <span class="nc">Uni</span><span class="o">&lt;</span><span class="nc">UserDto</span><span class="o">&gt;</span> <span class="nf">getById</span><span class="o">(</span><span class="nd">@PathParam</span><span class="o">(</span><span class="s">"id"</span><span class="o">)</span> <span class="nc">Long</span> <span class="n">id</span><span class="o">)</span> <span class="o">{</span> <i class="conum" data-value="2"></i><b>(2)</b>
+        <span class="k">return</span> <span class="n">userRepository</span><span class="o">.</span><span class="na">findById</span><span class="o">(</span><span class="n">id</span><span class="o">)</span> <i class="conum" data-value="3"></i><b>(3)</b>
+                <span class="o">.</span><span class="na">onItem</span><span class="o">().</span><span class="na">transform</span><span class="o">(</span><span class="n">user</span> <span class="o">-&gt;</span> <span class="k">new</span> <span class="nc">UserDto</span><span class="o">(</span> <i class="conum" data-value="4"></i><b>(4)</b>
+                        <span class="n">user</span><span class="o">.</span><span class="na">getId</span><span class="o">(),</span>
+                        <span class="n">user</span><span class="o">.</span><span class="na">getFirstName</span><span class="o">(),</span>
+                        <span class="n">user</span><span class="o">.</span><span class="na">getLastName</span><span class="o">(),</span>
+                        <span class="n">user</span><span class="o">.</span><span class="na">getEmail</span><span class="o">())</span>
+                <span class="o">);</span>
+    <span class="o">}</span>
+    <span class="c1">// end::get_simple[]</span>
+
+    <span class="c1">// tag::create[]</span>
+    <span class="nd">@POST</span>
+    <span class="nd">@Produces</span><span class="o">(</span><span class="nc">MediaType</span><span class="o">.</span><span class="na">APPLICATION_JSON</span><span class="o">)</span>
+    <span class="nd">@Consumes</span><span class="o">(</span><span class="nc">MediaType</span><span class="o">.</span><span class="na">APPLICATION_JSON</span><span class="o">)</span>
+    <span class="nd">@WithTransaction</span> <i class="conum" data-value="5"></i><b>(5)</b>
+    <span class="kd">public</span> <span class="nc">Uni</span><span class="o">&lt;</span><span class="nc">Response</span><span class="o">&gt;</span> <span class="nf">createNew</span><span class="o">(</span><span class="nc">User</span> <span class="n">user</span><span class="o">,</span> <span class="nd">@Context</span> <span class="nc">UriInfo</span> <span class="n">uriInfo</span><span class="o">)</span> <span class="o">{</span> <i class="conum" data-value="6"></i><b>(6)</b>
+        <span class="k">return</span> <span class="nc">Uni</span><span class="o">.</span><span class="na">createFrom</span><span class="o">()</span>
+                <span class="o">.</span><span class="na">item</span><span class="o">(</span><span class="n">user</span><span class="o">)</span> <i class="conum" data-value="7"></i><b>(7)</b>
+                <span class="o">.</span><span class="na">onItem</span><span class="o">().</span><span class="na">ifNull</span><span class="o">().</span><span class="na">failWith</span><span class="o">(</span><span class="k">new</span> <span class="nc">WebApplicationException</span><span class="o">(</span><span class="nc">Response</span><span class="o">.</span><span class="na">Status</span><span class="o">.</span><span class="na">BAD_REQUEST</span><span class="o">))</span> <i class="conum" data-value="8"></i><b>(8)</b>
+                <span class="o">.</span><span class="na">onItem</span><span class="o">().</span><span class="na">ifNotNull</span><span class="o">().</span><span class="na">transformToUni</span><span class="o">(</span><span class="n">ignored</span> <span class="o">-&gt;</span> <span class="n">userRepository</span><span class="o">.</span><span class="na">persistAndFlush</span><span class="o">(</span><span class="n">user</span><span class="o">))</span> <i class="conum" data-value="9"></i><b>(9)</b>
+                <span class="o">.</span><span class="na">onItem</span><span class="o">().</span><span class="na">transform</span><span class="o">(</span><span class="n">u</span> <span class="o">-&gt;</span> <span class="o">{</span> <i class="conum" data-value="10"></i><b>(10)</b>
+                    <span class="no">URI</span> <span class="n">uri</span> <span class="o">=</span> <span class="n">uriInfo</span>
+                            <span class="o">.</span><span class="na">getAbsolutePathBuilder</span><span class="o">()</span>
+                            <span class="o">.</span><span class="na">path</span><span class="o">(</span><span class="nc">Long</span><span class="o">.</span><span class="na">toString</span><span class="o">(</span><span class="n">u</span><span class="o">.</span><span class="na">getId</span><span class="o">()))</span>
+                            <span class="o">.</span><span class="na">build</span><span class="o">();</span>
+
+                    <span class="k">return</span> <span class="nc">Response</span>
+                            <span class="o">.</span><span class="na">created</span><span class="o">(</span><span class="n">uri</span><span class="o">)</span>
+                            <span class="o">.</span><span class="na">entity</span><span class="o">(</span><span class="n">u</span><span class="o">)</span>
+                            <span class="o">.</span><span class="na">build</span><span class="o">();</span>
+                <span class="o">});</span>
+    <span class="o">}</span>
+    <span class="c1">// end::create[]</span>
+<span class="o">}</span></code></pre>
 </div>
 </div>
 </div>
@@ -1687,6 +2058,15 @@ Die erstellten Nutzer werden in der Datenbank gespeichert. Bei <code>read</code>
 <p><a href="https://smallrye.io/smallrye-mutiny/latest/tags-index/#advanced" class="bare">https://smallrye.io/smallrye-mutiny/latest/tags-index/#advanced</a></p>
 </li>
 <li>
+<p><a href="https://raw.githubusercontent.com/alexmchale/merc-mud/refs/heads/master/doc/hacker.txt" class="bare">https://raw.githubusercontent.com/alexmchale/merc-mud/refs/heads/master/doc/hacker.txt</a></p>
+</li>
+<li>
+<p><a href="https://de.wikipedia.org/wiki/Imperative_Programmierung" class="bare">https://de.wikipedia.org/wiki/Imperative_Programmierung</a></p>
+</li>
+<li>
+<p><a href="https://quarkus.io/guides/hibernate-reactive-panache" class="bare">https://quarkus.io/guides/hibernate-reactive-panache</a></p>
+</li>
+<li>
 <p><a href="https://inria.hal.science/hal-03409277/file/paper-author-version.pdf" class="bare">https://inria.hal.science/hal-03409277/file/paper-author-version.pdf</a></p>
 </li>
 </ul>
@@ -1697,7 +2077,7 @@ Die erstellten Nutzer werden in der Datenbank gespeichert. Bei <code>read</code>
 <div id="footer">
 <div id="footer-text">
 Version 1.0<br>
-Last updated 2024-12-05 18:54:32 UTC
+Last updated 2024-12-05 19:20:19 UTC
 </div>
 </div>
 </body>
