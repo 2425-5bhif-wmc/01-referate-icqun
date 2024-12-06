@@ -62,7 +62,7 @@ Die einzelnen Aufgaben sequenziell ausgeführt. Bei I/O Operationen wird blockie
 image::st-sync.png[]
 
 ===== Einsträngig asynchron
-Die einzelnen Aufgaben werden gleichzeitig und in beliebiger Reihenfolge ausgeführt, jedoch *nicht parallel*. I/O Operationen geben Zeit für andere Aufgaben, wodurch die *gleichzeitige* Ausführung ermöglicht wird.
+Die einzelnen Aufgaben werden *gleichzeitig* und in beliebiger Reihenfolge ausgeführt, jedoch *nicht parallel*. I/O Operationen geben Zeit für andere Aufgaben, wodurch die *gleichzeitige* Ausführung ermöglicht wird.
 
 image::st-async.png[]
 
@@ -101,7 +101,7 @@ Reaktives Programmieren ist von Natur aus *asynchron*, da der Zeitpunkt, wann we
 *Mutiny* unterstützt das Erstellen solcher Datenströme und das Verarbeiten von der durch die Beobachtung aufkommenden *Events*.
 
 === Event-driven
-Neben *Datenströmen* sind *Events* (Ereignisse) eine weitere Kernkomponente von Mutiny. Ereignisse, informieren Beobachter über neue Daten im Strom, welche anschließend weiterarbeitet werden können.
+Neben *Datenströmen* sind *Events* (Ereignisse) eine weitere Kernkomponente von Mutiny. Ereignisse, informieren Beobachter über neue Daten im Strom, welche anschließend weiterverarbeitet werden können.
 
 == Warum Mutiny und nicht <insert-reactive-library-here>?
 * `Mutiny` ist die primäre API für reaktive Quarkus Applikationen.
@@ -111,7 +111,7 @@ Neben *Datenströmen* sind *Events* (Ereignisse) eine weitere Kernkomponente von
 *** Leichter zu verstehen
 ** Auch nach 6 Monaten Programmierpause noch lesbar
 ** Library Sourcecode leichtgewichtiger
-*** Weniger LinesOfCode (LOC)
+*** Weniger Lines of code (LOC)
 *** Weniger Files
 
 // Achtung werbeveranstaltung
@@ -138,8 +138,8 @@ image::pp-ev-example.png[]
 
 Insgesamt gibt es *drei* wichtige Arten von Events, die von *Publishern* zu *Subscribern* "fließen":
 
-* *Items*: Events, die einen gewissen Wert beinhalten.
-* *Completion*: Signalisiert, dass keine weiteren Werte veröffentlicht werden.
+* *Item*: Event, das einen gewissen Wert beinhaltet.
+* *Completion*: Event, das signalisiert, dass keine weiteren Werte veröffentlicht werden.
 * *Failure*: Fehler bei der Quelle. Es können keine weiteren Werte veröffentlicht werden.
 
 CAUTION: Eine Quelle veröffentlicht nur dann Events, wenn sie von einem *Subscriber* abonniert wurde. Ohne Subscriber wird kein Code ausgeführt.
@@ -147,7 +147,7 @@ CAUTION: Eine Quelle veröffentlicht nur dann Events, wenn sie von einem *Subscr
 == Uni and Multi (Event-Sources)
 Mutiny definiert zwei reaktive Datentypen:
 
-* `Uni<T>`: Repräsentiert einen der entweder ein *Item* oder eine *Failure* liefert.
+* `Uni<T>`: Repräsentiert einen Datenstrom der entweder ein *Item* oder eine *Failure* liefert.
 * `Multi<T>`: Repräsentiert einen Datenstrom der *0 bis n*, möglicherweise unlimitiert viele *Items* liefert.
 
 Sowohl `Uni<T>` als auch `Multi<T>` sind asynchrone Datentypen. Sie beobachten und veröffentlichen Events zu beliebigen Zeitpunkten.
