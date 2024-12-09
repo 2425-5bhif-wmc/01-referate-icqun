@@ -602,7 +602,7 @@ pre.rouge .gs {
 </li>
 <li><a href="#_warum_reaktives_programmieren_in_franklyn_eingesetzt_wird">11. Warum reaktives Programmieren in Franklyn eingesetzt wird</a></li>
 <li><a href="#_demos">12. Demos</a>
-<ul class="sectlevel3">
+<ul class="sectlevel2">
 <li><a href="#_unterschied_classic_vs_mutiny">12.1. Unterschied classic vs mutiny</a></li>
 <li><a href="#_classic_imperativ">12.2. Classic (Imperativ)</a></li>
 <li><a href="#_mutiny_reaktiv">12.3. Mutiny (Reaktiv)</a></li>
@@ -1222,10 +1222,10 @@ Eine Quelle veröffentlicht nur dann Events, wenn sie von einem <strong>Subscrib
     <span class="c1">// = Blocking =</span>
 
     <span class="k">return</span> <span class="k">new</span> <span class="nf">UserDto</span><span class="o">(</span>
-                    <span class="n">user</span><span class="o">.</span><span class="na">getId</span><span class="o">(),</span>
-                    <span class="n">user</span><span class="o">.</span><span class="na">getFirstName</span><span class="o">(),</span>
-                    <span class="n">user</span><span class="o">.</span><span class="na">getLastName</span><span class="o">(),</span>
-                    <span class="n">user</span><span class="o">.</span><span class="na">getEmail</span><span class="o">()</span>
+            <span class="n">user</span><span class="o">.</span><span class="na">getId</span><span class="o">(),</span>
+            <span class="n">user</span><span class="o">.</span><span class="na">getFirstName</span><span class="o">(),</span>
+            <span class="n">user</span><span class="o">.</span><span class="na">getLastName</span><span class="o">(),</span>
+            <span class="n">user</span><span class="o">.</span><span class="na">getEmail</span><span class="o">()</span>
     <span class="o">);</span>
 <span class="o">}</span></code></pre>
 </div>
@@ -1402,9 +1402,39 @@ Mutiny stellt neben dem <code>Uni&lt;T&gt;</code> Datentyp noch <code>Multi&lt;T
 </div>
 <div class="sect2">
 <h3 id="_beispiel"><a class="anchor" href="#_beispiel"></a>10.1. Beispiel</h3>
-<div class="paragraph">
-<p>TODO: Future Projekt (mglw. stress Programm)</p>
+<div class="listingblock">
+<div class="title">Android ToDo App: Load ToDos</div>
+<div class="content">
+<pre class="rouge highlight"><code data-lang="java"><span class="nc">CompletableFuture</span>
+                <span class="o">.</span><span class="na">supplyAsync</span><span class="o">(</span><span class="nl">todoClient:</span><span class="o">:</span><span class="n">all</span><span class="o">)</span>
+                <span class="o">.</span><span class="na">thenAccept</span><span class="o">(</span><span class="nl">store:</span><span class="o">:</span><span class="n">setTodos</span><span class="o">)</span>
+                <span class="o">.</span><span class="na">exceptionally</span><span class="o">(</span><span class="n">e</span> <span class="o">-&gt;</span> <span class="o">{</span>
+                    <span class="nc">Log</span><span class="o">.</span><span class="na">e</span><span class="o">(</span><span class="no">TAG</span><span class="o">,</span> <span class="s">"Error loading Todos!"</span><span class="o">,</span> <span class="n">e</span><span class="o">);</span>
+                    <span class="k">return</span> <span class="kc">null</span><span class="o">;</span>
+                <span class="o">});</span></code></pre>
 </div>
+</div>
+<details>
+<summary class="title">HTTP Request (HttpClient)</summary>
+<div class="content">
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="java"><span class="n">client</span><span class="o">.</span><span class="na">sendAsync</span><span class="o">(</span><span class="n">getAllRequest</span><span class="o">,</span> <span class="nc">HttpResponse</span><span class="o">.</span><span class="na">BodyHandlers</span><span class="o">.</span><span class="na">ofString</span><span class="o">())</span>
+        <span class="o">.</span><span class="na">thenRun</span><span class="o">(()</span> <span class="o">-&gt;</span> <span class="o">{</span>
+            <span class="kt">long</span> <span class="n">elapsed</span> <span class="o">=</span> <span class="nc">System</span><span class="o">.</span><span class="na">nanoTime</span><span class="o">()</span> <span class="o">-</span> <span class="n">requestStart</span><span class="o">;</span>
+            <span class="n">minResponseTime</span><span class="o">.</span><span class="na">getAndAccumulate</span><span class="o">(</span><span class="n">elapsed</span><span class="o">,</span> <span class="nl">Math:</span><span class="o">:</span><span class="n">min</span><span class="o">);</span>
+            <span class="n">maxResponseTime</span><span class="o">.</span><span class="na">getAndAccumulate</span><span class="o">(</span><span class="n">elapsed</span><span class="o">,</span> <span class="nl">Math:</span><span class="o">:</span><span class="n">max</span><span class="o">);</span>
+        <span class="o">})</span>
+        <span class="o">.</span><span class="na">thenRun</span><span class="o">(</span><span class="nl">performedRequests:</span><span class="o">:</span><span class="n">incrementAndGet</span><span class="o">)</span>
+        <span class="o">.</span><span class="na">exceptionally</span><span class="o">(</span><span class="n">t</span> <span class="o">-&gt;</span> <span class="o">{</span>
+            <span class="n">failures</span><span class="o">.</span><span class="na">incrementAndGet</span><span class="o">();</span>
+            <span class="n">performedRequests</span><span class="o">.</span><span class="na">incrementAndGet</span><span class="o">();</span>
+            <span class="k">return</span> <span class="kc">null</span><span class="o">;</span>
+        <span class="o">});</span></code></pre>
+</div>
+</div>
+</div>
+</details>
 </div>
 </div>
 </div>
@@ -1449,6 +1479,11 @@ Mutiny stellt neben dem <code>Uni&lt;T&gt;</code> Datentyp noch <code>Multi&lt;T
 <div class="sect1">
 <h2 id="_demos"><a class="anchor" href="#_demos"></a>12. Demos</h2>
 <div class="sectionbody">
+<div class="imageblock">
+<div class="content">
+<img src="images/diag-plantuml-md5-d973db66c36ea616dd3cbe8441abb13b.png" alt="Diagram" width="530" height="90">
+</div>
+</div>
 <div class="paragraph">
 <p>Im <a href="https://github.com/2425-5bhif-wmc/01-referate-icqun">Repository</a> sind neben der Dokumentation auch noch 2 Demoprojekte aufzufinden:</p>
 </div>
@@ -1460,6 +1495,9 @@ Mutiny stellt neben dem <code>Uni&lt;T&gt;</code> Datentyp noch <code>Multi&lt;T
 <div class="paragraph">
 <p>Beide Projekte implementieren einen kleinen REST-Service, mit einem <code>User</code> Endpunkt, welcher <code>create</code> und <code>read</code> Operationen zur Verfügung stellt.
 Die erstellten Nutzer werden in der Datenbank gespeichert. Bei <code>read</code> Operationen wird das um einige "sensible" Daten reduzierte <code>UserDto</code> zurückgeliefert.</p>
+</div>
+<div class="paragraph">
+<p>Weiters gibt es noch das <strong>stress</strong> Projekt, welches ein kleines Tool zum Testen der Performance der beiden Applikationen verwendet wird.</p>
 </div>
 <div class="paragraph">
 <p><strong>Klassen</strong></p>
@@ -1602,8 +1640,8 @@ Die erstellten Nutzer werden in der Datenbank gespeichert. Bei <code>read</code>
 </div>
 </div>
 </details>
-<div class="sect3">
-<h4 id="_unterschied_classic_vs_mutiny"><a class="anchor" href="#_unterschied_classic_vs_mutiny"></a>12.1. Unterschied classic vs mutiny</h4>
+<div class="sect2">
+<h3 id="_unterschied_classic_vs_mutiny"><a class="anchor" href="#_unterschied_classic_vs_mutiny"></a>12.1. Unterschied classic vs mutiny</h3>
 <div class="ulist">
 <ul>
 <li>
@@ -1617,6 +1655,11 @@ Die erstellten Nutzer werden in der Datenbank gespeichert. Bei <code>read</code>
 </div>
 <div class="sect2">
 <h3 id="_classic_imperativ"><a class="anchor" href="#_classic_imperativ"></a>12.2. Classic (Imperativ)</h3>
+<div class="imageblock">
+<div class="content">
+<img src="images/diag-plantuml-md5-95c2c2fa0c0ce63ec0e9a9f9b7b628e4.png" alt="Diagram" width="530" height="107">
+</div>
+</div>
 <div class="listingblock">
 <div class="title">Projekt erstellen</div>
 <div class="content">
@@ -1653,6 +1696,7 @@ Die erstellten Nutzer werden in der Datenbank gespeichert. Bei <code>read</code>
 </span><span class="py">quarkus.datasource.username</span> <span class="p">=</span> <span class="s">app</span>
 <span class="py">quarkus.datasource.password</span> <span class="p">=</span> <span class="s">app</span>
 <span class="py">quarkus.datasource.jdbc.url</span> <span class="p">=</span> <span class="s">jdbc:postgresql://localhost:5432/db</span>
+<span class="err">%</span><span class="py">prod.quarkus.datasource.reactive.url</span> <span class="p">=</span> <span class="s">vertx-reactive:postgresql://postgres:5432/db</span>
 
 <span class="err">%</span><span class="py">dev.quarkus.hibernate-orm.database.generation</span><span class="p">=</span><span class="s">drop-and-create</span></code></pre>
 </div>
@@ -1687,7 +1731,6 @@ Die erstellten Nutzer werden in der Datenbank gespeichert. Bei <code>read</code>
 <div class="content">
 <pre class="rouge highlight"><code data-lang="java"><span class="kn">package</span> <span class="nn">at.htl.feature.user</span><span class="o">;</span>
 
-<span class="kn">import</span> <span class="nn">io.smallrye.mutiny.Uni</span><span class="o">;</span>
 <span class="kn">import</span> <span class="nn">jakarta.inject.Inject</span><span class="o">;</span>
 <span class="kn">import</span> <span class="nn">jakarta.transaction.Transactional</span><span class="o">;</span>
 <span class="kn">import</span> <span class="nn">jakarta.ws.rs.*</span><span class="o">;</span>
@@ -1728,10 +1771,10 @@ Die erstellten Nutzer werden in der Datenbank gespeichert. Bei <code>read</code>
         <span class="c1">// = Blocking =</span>
 
         <span class="k">return</span> <span class="k">new</span> <span class="nf">UserDto</span><span class="o">(</span>
-                        <span class="n">user</span><span class="o">.</span><span class="na">getId</span><span class="o">(),</span>
-                        <span class="n">user</span><span class="o">.</span><span class="na">getFirstName</span><span class="o">(),</span>
-                        <span class="n">user</span><span class="o">.</span><span class="na">getLastName</span><span class="o">(),</span>
-                        <span class="n">user</span><span class="o">.</span><span class="na">getEmail</span><span class="o">()</span>
+                <span class="n">user</span><span class="o">.</span><span class="na">getId</span><span class="o">(),</span>
+                <span class="n">user</span><span class="o">.</span><span class="na">getFirstName</span><span class="o">(),</span>
+                <span class="n">user</span><span class="o">.</span><span class="na">getLastName</span><span class="o">(),</span>
+                <span class="n">user</span><span class="o">.</span><span class="na">getEmail</span><span class="o">()</span>
         <span class="o">);</span>
     <span class="o">}</span>
     <span class="c1">// end::get_simple_classic[]</span>
@@ -1769,6 +1812,11 @@ Die erstellten Nutzer werden in der Datenbank gespeichert. Bei <code>read</code>
 </div>
 <div class="sect2">
 <h3 id="_mutiny_reaktiv"><a class="anchor" href="#_mutiny_reaktiv"></a>12.3. Mutiny (Reaktiv)</h3>
+<div class="imageblock">
+<div class="content">
+<img src="images/diag-plantuml-md5-ef778948a55d5e0b939684ea84d13786.png" alt="Diagram" width="530" height="107">
+</div>
+</div>
 <div class="listingblock">
 <div class="title">Projekt erstellen</div>
 <div class="content">
@@ -1804,7 +1852,9 @@ Die erstellten Nutzer werden in der Datenbank gespeichert. Bei <code>read</code>
 <span class="hll"><span class="py">quarkus.datasource.db-kind</span> <span class="p">=</span> <span class="s">postgresql</span>
 </span><span class="py">quarkus.datasource.username</span> <span class="p">=</span> <span class="s">app</span>
 <span class="py">quarkus.datasource.password</span> <span class="p">=</span> <span class="s">app</span>
-<span class="py">quarkus.datasource.reactive.url</span> <span class="p">=</span> <span class="s">vertx-reactive:postgresql://localhost:5432/db</span>
+<span class="err">%</span><span class="py">dev.quarkus.datasource.reactive.url</span> <span class="p">=</span> <span class="s">vertx-reactive:postgresql://localhost:5432/db</span>
+<span class="err">%</span><span class="py">prod.quarkus.datasource.reactive.url</span> <span class="p">=</span> <span class="s">vertx-reactive:postgresql://postgres:5432/db</span>
+
 
 <span class="err">%</span><span class="py">dev.quarkus.hibernate-orm.database.generation</span><span class="p">=</span><span class="s">drop-and-create</span></code></pre>
 </div>
@@ -1922,6 +1972,14 @@ Die erstellten Nutzer werden in der Datenbank gespeichert. Bei <code>read</code>
 </div>
 <div class="sect2">
 <h3 id="_stress"><a class="anchor" href="#_stress"></a>12.4. Stress</h3>
+<div class="imageblock">
+<div class="content">
+<img src="images/diag-plantuml-md5-ca64c72021175da0194361aabd1164a8.png" alt="Diagram" width="555" height="90">
+</div>
+</div>
+<div class="paragraph">
+<p>Neben den beiden Implementierungsvarianten gibt es auch noch ein kleines <code>Stress</code> Programm, welches eine große Menge an Requests an eine Applikation schicken kann.</p>
+</div>
 <div class="listingblock">
 <div class="title">Projekt erstellen</div>
 <div class="content">
@@ -1933,10 +1991,148 @@ Die erstellten Nutzer werden in der Datenbank gespeichert. Bei <code>read</code>
 <div class="content">
 <pre class="rouge highlight"><code data-lang="shell"><span class="c">#!/usr/bin/env bash</span>
 
+<span class="nb">set</span> <span class="nt">-e</span>
+
 mvn clean package
-java <span class="nt">-cp</span> target/stress-1.0.jar at.htl.Stress</code></pre>
+java <span class="nt">-cp</span> target/stress-1.0.jar at.htl.Stress <span class="s2">"</span><span class="nv">$1</span><span class="s2">"</span> <span class="s2">"</span><span class="nv">$2</span><span class="s2">"</span></code></pre>
 </div>
 </div>
+<details>
+<summary class="title">main</summary>
+<div class="content">
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="java"><span class="kn">package</span> <span class="nn">at.htl</span><span class="o">;</span>
+
+<span class="kn">import</span> <span class="nn">java.net.URI</span><span class="o">;</span>
+<span class="kn">import</span> <span class="nn">java.net.http.HttpClient</span><span class="o">;</span>
+<span class="kn">import</span> <span class="nn">java.net.http.HttpRequest</span><span class="o">;</span>
+<span class="kn">import</span> <span class="nn">java.net.http.HttpResponse</span><span class="o">;</span>
+<span class="kn">import</span> <span class="nn">java.util.ArrayList</span><span class="o">;</span>
+<span class="kn">import</span> <span class="nn">java.util.Arrays</span><span class="o">;</span>
+<span class="kn">import</span> <span class="nn">java.util.concurrent.CompletableFuture</span><span class="o">;</span>
+<span class="kn">import</span> <span class="nn">java.util.concurrent.ConcurrentLinkedQueue</span><span class="o">;</span>
+<span class="kn">import</span> <span class="nn">java.util.concurrent.atomic.AtomicInteger</span><span class="o">;</span>
+<span class="kn">import</span> <span class="nn">java.util.concurrent.atomic.AtomicLong</span><span class="o">;</span>
+
+<span class="kd">public</span> <span class="kd">class</span> <span class="nc">Stress</span> <span class="o">{</span>
+    <span class="kd">private</span> <span class="kd">static</span> <span class="kd">final</span> <span class="nc">AtomicInteger</span> <span class="n">performedRequests</span> <span class="o">=</span> <span class="k">new</span> <span class="nc">AtomicInteger</span><span class="o">(</span><span class="mi">0</span><span class="o">);</span>
+    <span class="kd">private</span> <span class="kd">static</span> <span class="kd">final</span> <span class="nc">AtomicInteger</span> <span class="n">failures</span> <span class="o">=</span> <span class="k">new</span> <span class="nc">AtomicInteger</span><span class="o">(</span><span class="mi">0</span><span class="o">);</span>
+    <span class="kd">private</span> <span class="kd">static</span> <span class="kd">final</span> <span class="nc">AtomicLong</span> <span class="n">maxResponseTime</span> <span class="o">=</span> <span class="k">new</span> <span class="nc">AtomicLong</span><span class="o">(</span><span class="nc">Long</span><span class="o">.</span><span class="na">MIN_VALUE</span><span class="o">);</span>
+    <span class="kd">private</span> <span class="kd">static</span> <span class="kd">final</span> <span class="nc">AtomicLong</span> <span class="n">minResponseTime</span> <span class="o">=</span> <span class="k">new</span> <span class="nc">AtomicLong</span><span class="o">(</span><span class="nc">Long</span><span class="o">.</span><span class="na">MAX_VALUE</span><span class="o">);</span>
+
+    <span class="kd">private</span> <span class="kd">static</span> <span class="kt">void</span> <span class="nf">printUsage</span><span class="o">()</span> <span class="o">{</span>
+        <span class="nc">System</span><span class="o">.</span><span class="na">err</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="s">"[usage]: &lt;url&gt; &lt;total-requests&gt;"</span><span class="o">);</span>
+        <span class="nc">System</span><span class="o">.</span><span class="na">err</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="s">"where total-requests &gt; 0"</span><span class="o">);</span>
+    <span class="o">}</span>
+
+    <span class="kd">public</span> <span class="kd">static</span> <span class="kt">void</span> <span class="nf">main</span><span class="o">(</span><span class="nc">String</span><span class="o">[]</span> <span class="n">args</span><span class="o">)</span> <span class="o">{</span>
+        <span class="k">if</span> <span class="o">(</span><span class="n">args</span><span class="o">.</span><span class="na">length</span> <span class="o">&lt;</span> <span class="mi">2</span><span class="o">)</span> <span class="o">{</span>
+            <span class="n">printUsage</span><span class="o">();</span>
+            <span class="k">return</span><span class="o">;</span>
+        <span class="o">}</span>
+
+        <span class="nc">String</span> <span class="n">url</span> <span class="o">=</span> <span class="n">args</span><span class="o">[</span><span class="mi">0</span><span class="o">];</span>
+        <span class="kt">int</span> <span class="n">totalRequests</span> <span class="o">=</span> <span class="nc">Integer</span><span class="o">.</span><span class="na">parseInt</span><span class="o">(</span><span class="n">args</span><span class="o">[</span><span class="mi">1</span><span class="o">]);</span>
+        <span class="nc">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">printf</span><span class="o">(</span><span class="s">"Performing %,d requests%n"</span><span class="o">,</span> <span class="n">totalRequests</span><span class="o">);</span>
+
+        <span class="k">if</span> <span class="o">(</span><span class="n">totalRequests</span> <span class="o">&lt;=</span> <span class="mi">0</span><span class="o">){</span>
+            <span class="n">printUsage</span><span class="o">();</span>
+            <span class="k">return</span><span class="o">;</span>
+        <span class="o">}</span>
+
+        <span class="kt">long</span> <span class="n">start</span><span class="o">;</span>
+        <span class="k">try</span> <span class="o">(</span><span class="nc">HttpClient</span> <span class="n">client</span> <span class="o">=</span> <span class="nc">HttpClient</span><span class="o">.</span><span class="na">newHttpClient</span><span class="o">())</span> <span class="o">{</span>
+            <span class="nc">HttpRequest</span> <span class="n">getAllRequest</span> <span class="o">=</span> <span class="nc">HttpRequest</span><span class="o">.</span><span class="na">newBuilder</span><span class="o">()</span>
+                    <span class="o">.</span><span class="na">uri</span><span class="o">(</span><span class="no">URI</span><span class="o">.</span><span class="na">create</span><span class="o">(</span><span class="n">url</span><span class="o">))</span>
+                    <span class="o">.</span><span class="na">GET</span><span class="o">()</span>
+                    <span class="o">.</span><span class="na">build</span><span class="o">();</span>
+
+            <span class="n">start</span> <span class="o">=</span> <span class="nc">System</span><span class="o">.</span><span class="na">nanoTime</span><span class="o">();</span>
+            <span class="k">for</span> <span class="o">(</span><span class="kt">int</span> <span class="n">i</span> <span class="o">=</span> <span class="mi">0</span><span class="o">;</span> <span class="n">i</span> <span class="o">&lt;</span> <span class="n">totalRequests</span><span class="o">;</span> <span class="n">i</span><span class="o">++)</span> <span class="o">{</span>
+                <span class="kt">long</span> <span class="n">requestStart</span> <span class="o">=</span> <span class="nc">System</span><span class="o">.</span><span class="na">nanoTime</span><span class="o">();</span>
+                <span class="c1">// tag::send_webrequest[]</span>
+                <span class="n">client</span><span class="o">.</span><span class="na">sendAsync</span><span class="o">(</span><span class="n">getAllRequest</span><span class="o">,</span> <span class="nc">HttpResponse</span><span class="o">.</span><span class="na">BodyHandlers</span><span class="o">.</span><span class="na">ofString</span><span class="o">())</span>
+                        <span class="o">.</span><span class="na">thenRun</span><span class="o">(()</span> <span class="o">-&gt;</span> <span class="o">{</span>
+                            <span class="kt">long</span> <span class="n">elapsed</span> <span class="o">=</span> <span class="nc">System</span><span class="o">.</span><span class="na">nanoTime</span><span class="o">()</span> <span class="o">-</span> <span class="n">requestStart</span><span class="o">;</span>
+                            <span class="n">minResponseTime</span><span class="o">.</span><span class="na">getAndAccumulate</span><span class="o">(</span><span class="n">elapsed</span><span class="o">,</span> <span class="nl">Math:</span><span class="o">:</span><span class="n">min</span><span class="o">);</span>
+                            <span class="n">maxResponseTime</span><span class="o">.</span><span class="na">getAndAccumulate</span><span class="o">(</span><span class="n">elapsed</span><span class="o">,</span> <span class="nl">Math:</span><span class="o">:</span><span class="n">max</span><span class="o">);</span>
+                        <span class="o">})</span>
+                        <span class="o">.</span><span class="na">thenRun</span><span class="o">(</span><span class="nl">performedRequests:</span><span class="o">:</span><span class="n">incrementAndGet</span><span class="o">)</span>
+                        <span class="o">.</span><span class="na">exceptionally</span><span class="o">(</span><span class="n">t</span> <span class="o">-&gt;</span> <span class="o">{</span>
+                            <span class="n">failures</span><span class="o">.</span><span class="na">incrementAndGet</span><span class="o">();</span>
+                            <span class="n">performedRequests</span><span class="o">.</span><span class="na">incrementAndGet</span><span class="o">();</span>
+                            <span class="k">return</span> <span class="kc">null</span><span class="o">;</span>
+                        <span class="o">});</span>
+                <span class="c1">// end::send_webrequest[]</span>
+            <span class="o">}</span>
+        <span class="o">}</span>
+
+        <span class="k">while</span> <span class="o">(</span><span class="n">performedRequests</span><span class="o">.</span><span class="na">get</span><span class="o">()</span> <span class="o">&lt;</span> <span class="n">totalRequests</span><span class="o">)</span> <span class="o">{</span>
+            <span class="k">try</span> <span class="o">{</span>
+                <span class="nc">Thread</span><span class="o">.</span><span class="na">sleep</span><span class="o">(</span><span class="mi">50</span><span class="o">);</span>
+            <span class="o">}</span> <span class="k">catch</span> <span class="o">(</span><span class="nc">InterruptedException</span> <span class="n">e</span><span class="o">)</span> <span class="o">{</span>
+                <span class="k">throw</span> <span class="k">new</span> <span class="nf">RuntimeException</span><span class="o">(</span><span class="n">e</span><span class="o">);</span>
+            <span class="o">}</span>
+        <span class="o">}</span>
+
+        <span class="kt">long</span> <span class="n">end</span> <span class="o">=</span> <span class="nc">System</span><span class="o">.</span><span class="na">nanoTime</span><span class="o">();</span>
+        <span class="kt">long</span> <span class="n">totalElapsedNanos</span> <span class="o">=</span> <span class="n">end</span> <span class="o">-</span> <span class="n">start</span><span class="o">;</span>
+
+        <span class="nc">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">printf</span><span class="o">(</span><span class="s">"Total: %f ms%n"</span><span class="o">,</span> <span class="n">totalElapsedNanos</span> <span class="o">/</span> <span class="mf">1000000.0</span><span class="o">);</span>
+        <span class="nc">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">printf</span><span class="o">(</span><span class="s">"Avg: %f ms%n"</span><span class="o">,</span> <span class="n">totalElapsedNanos</span> <span class="o">/</span> <span class="o">(</span><span class="kt">double</span><span class="o">)</span> <span class="n">totalRequests</span> <span class="o">/</span> <span class="mf">1000000.0</span><span class="o">);</span>
+        <span class="nc">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">printf</span><span class="o">(</span><span class="s">"Min: %f ms%n"</span><span class="o">,</span> <span class="n">minResponseTime</span><span class="o">.</span><span class="na">get</span><span class="o">()</span> <span class="o">/</span> <span class="mf">1000000.0</span><span class="o">);</span>
+        <span class="nc">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">printf</span><span class="o">(</span><span class="s">"Max: %f ms%n"</span><span class="o">,</span> <span class="n">maxResponseTime</span><span class="o">.</span><span class="na">get</span><span class="o">()</span> <span class="o">/</span> <span class="mf">1000000.0</span><span class="o">);</span>
+        <span class="nc">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">printf</span><span class="o">(</span><span class="s">"Failures: %d%n"</span><span class="o">,</span> <span class="n">failures</span><span class="o">.</span><span class="na">get</span><span class="o">());</span>
+    <span class="o">}</span>
+<span class="o">}</span></code></pre>
+</div>
+</div>
+</div>
+</details>
+<div class="paragraph">
+<p>Insgesamt gab es je Implementierungsvariante 3 Durchläufe bei denen jeweils 500 000 <code>GET</code> Requests auf den <code>GetAllUsers</code> Endpunkt durchgeführt wurden.</p>
+</div>
+<details>
+<summary class="title">Ergebnisse</summary>
+<div class="content">
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="text"># Imperative Variante
+./run.sh "http://&lt;ip&gt;:8080" 500000
+Performing 500,000 requests
+
+Failures: 0
+Total: 13937.379654 ms
+Avg: 0.027875 ms, Min: 0.181905 ms, Max: 6038.797575 ms
+
+Failures: 0
+Total: 16752.901342 ms
+Avg: 0.033506 ms, Min: 0.159324 ms, Max: 9144.043005 ms
+
+Failures: 0
+Total: 10595.948826 ms
+Avg: 0.021192 ms, Min: 0.140273 ms, Max: 3261.123551 ms
+
+# Reaktive Variante
+./run.sh "http://&lt;ip&gt;:8081" 500000
+Performing 500,000 requests
+
+Failures: 0
+Total: 12575.770490 ms
+Avg: 0.025152 ms, Min: 0.137133 ms, Max: 5480.610561 ms
+
+Failures: 0
+Total: 14015.646342 ms
+Avg: 0.028031 ms, Min: 0.145043 ms, Max: 5915.921017 ms
+
+Failures: 0
+Total: 10693.279378 ms
+Avg: 0.021387 ms, Min: 0.133597 ms, Max: 1042.560346 ms</code></pre>
+</div>
+</div>
+</div>
+</details>
 </div>
 </div>
 </div>
@@ -2157,7 +2353,7 @@ java <span class="nt">-cp</span> target/stress-1.0.jar at.htl.Stress</code></pre
 <div id="footer">
 <div id="footer-text">
 Version 1.0<br>
-Last updated 2024-12-09 07:11:31 UTC
+Last updated 2024-12-09 18:48:32 UTC
 </div>
 </div>
 </body>
