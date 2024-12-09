@@ -291,6 +291,30 @@ werden müssen *vorteilhaft*. (_I/O Bound_ Tasks)
 
 werden müssen *vorteilhaft*. (_CPU Bound_ Tasks)
 
+== Uni<T> vs CompletableFuture
+Ein `CompletableFuture` ist ein seit Java 8 vertretener Datentyp, der das Ergebnis einer asynchronen Operation darstellt. Er dient als Platzhalter, bis das tatsächliche Ergebnis verfügbar ist.
+
+Gleich wie bei Mutiny Pipelines können Operationen aneinander gekettet werden (`then<action>()`) und Fehler behandelt werden (`exceptionally()`)
+
+Die Hauptunterschiede zwischen `Uni<T>` und `CompletableFuture` sind:
+
+*Ausführung*:
+
+* Completable Future: *eager* (sofort)
+* Uni: *lazy* (erst nach `Subscription`)
+
+*Caching*:
+
+* Completable Future: *cached* (Ergebnis wird gespeichert)
+* Uni: *not cached* (jede neue `Subscription` verursacht eine neue Ausführung)
+
+*Features*: +
+Mutiny stellt neben dem `Uni<T>` Datentyp noch `Multi<T>` zur verfügung, welcher noch einige zusätzliche Dinge ermöglicht (z.B. unendliche Datenströme), die durch Futures nicht dargestellt werden können.
+
+=== Beispiel
+TODO: Future Projekt (mglw. stress Programm)
+
+
 == Warum reaktives Programmieren in Franklyn eingesetzt wird
 * Massenweise I/O Operationen
 ** Screenshot speichern/laden (Datenbank + Filesystem)
@@ -349,7 +373,7 @@ include::../../mutiny-demo/src/main/java/at/htl/feature/user/UserDto.java[]
 mvn io.quarkus.platform:quarkus-maven-plugin:3.17.3:create \
     -DprojectGroupId=at.htl \
     -DprojectArtifactId=classic-demo \
-    -Dextensions='rest-jackson, quarkus-hibernate-orm-panache, quarkus-jdbc-postgresql, smallrye-openapi'
+    -Dextensions='rest-jackson, quarkus-hibernate-orm-panache, quarkus-jdbc-postgresql, smallrye-openapi, smallrye-health'
 cd classic-demo
 ----
 
@@ -395,7 +419,7 @@ include::../../classic-demo/src/main/java/at/htl/feature/user/UserResource.java[
 mvn io.quarkus.platform:quarkus-maven-plugin:3.17.3:create \
     -DprojectGroupId=at.htl \
     -DprojectArtifactId=mutiny-demo \
-    -Dextensions='rest-jackson, quarkus-hibernate-reactive-panache, quarkus-reactive-pg-client, smallrye-openapi'
+    -Dextensions='rest-jackson, quarkus-hibernate-reactive-panache, quarkus-reactive-pg-client, smallrye-openapi, smallrye-health'
 cd mutiny-demo
 ----
 
@@ -433,6 +457,19 @@ include::../../mutiny-demo/src/main/java/at/htl/feature/user/UserRepository.java
 include::../../mutiny-demo/src/main/java/at/htl/feature/user/UserResource.java[]
 ----
 ====
+
+=== Stress
+.Projekt erstellen
+[source, shell]
+----
+mvn archetype:generate -DgroupId=at.htl -DartifactId=stress -DarchetypeArtifactId=maven-archetype-quickstart -DarchetypeVersion=1.5 -DinteractiveMode=false
+----
+
+.Run script (run.sh)
+[source, shell]
+----
+include::../../stress/run.sh[]
+----
 
 == Bonus: Franklyn
 
