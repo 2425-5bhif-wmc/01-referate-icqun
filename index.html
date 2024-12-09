@@ -2092,44 +2092,60 @@ java <span class="nt">-cp</span> target/stress-1.0.jar at.htl.Stress <span class
 </div>
 </details>
 <div class="paragraph">
-<p>Insgesamt gab es je Implementierungsvariante 3 Durchläufe bei denen jeweils 500 000 <code>GET</code> Requests auf den <code>GetAllUsers</code> Endpunkt durchgeführt wurden.</p>
+<p>Insgesamt gab es je Implementierungsvariante 3 Durchläufe bei denen jeweils 10000 <code>GET</code> Requests auf den <code>GetAllUsers</code> Endpunkt durchgeführt wurden. In der Datenbank sind dafür 500 Datensätze angelegt.</p>
 </div>
 <details>
 <summary class="title">Ergebnisse</summary>
 <div class="content">
 <div class="listingblock">
 <div class="content">
-<pre class="rouge highlight"><code data-lang="text"># Imperative Variante
-./run.sh "http://&lt;ip&gt;:8080" 500000
-Performing 500,000 requests
+<pre class="rouge highlight"><code data-lang="text">=== Classic (imperativ) ===
+cmd: ./run.sh "http://&lt;ip&gt;:8080/user" 10000
 
+### run 1 ###
+Total: 18147.424126 ms
+Avg: 1.814742 ms
+Min: 6236.969171 ms
+Max: 17163.319449 ms
 Failures: 0
-Total: 13937.379654 ms
-Avg: 0.027875 ms, Min: 0.181905 ms, Max: 6038.797575 ms
 
-Failures: 0
-Total: 16752.901342 ms
-Avg: 0.033506 ms, Min: 0.159324 ms, Max: 9144.043005 ms
+### run 2 ###
+Total: 12474.264195 ms
+Avg: 1.247426 ms
+Min: 4522.708017 ms
+Max: 11643.565464 ms
+Failures: 355
 
-Failures: 0
-Total: 10595.948826 ms
-Avg: 0.021192 ms, Min: 0.140273 ms, Max: 3261.123551 ms
+### run 3 ###
+Total: 27386.730991 ms
+Avg: 2.738673 ms
+Min: 2568.849859 ms
+Max: 26044.717073 ms
+Failures: 93
 
-# Reaktive Variante
-./run.sh "http://&lt;ip&gt;:8081" 500000
-Performing 500,000 requests
+=== Mutiny (reaktiv) ===
+cmd: ./run.sh "http://&lt;ip&gt;:8081/user" 10000
 
-Failures: 0
-Total: 12575.770490 ms
-Avg: 0.025152 ms, Min: 0.137133 ms, Max: 5480.610561 ms
+### run 1 ###
+Total: 18665.215653 ms
+Avg: 1.866522 ms
+Min: 2361.612174 ms
+Max: 17741.019128 ms
+Failures: 62
 
-Failures: 0
-Total: 14015.646342 ms
-Avg: 0.028031 ms, Min: 0.145043 ms, Max: 5915.921017 ms
+### run 2 ###
+Total: 17007.617277 ms
+Avg: 1.700762 ms
+Min: 1198.679087 ms
+Max: 16150.559079 ms
+Failures: 29
 
-Failures: 0
-Total: 10693.279378 ms
-Avg: 0.021387 ms, Min: 0.133597 ms, Max: 1042.560346 ms</code></pre>
+### run 3 ###
+Total: 13618.562836 ms
+Avg: 1.361856 ms
+Min: 875.661200 ms
+Max: 13155.545723 ms
+Failures: 1</code></pre>
 </div>
 </div>
 </div>
@@ -2372,7 +2388,7 @@ Avg: 0.021387 ms, Min: 0.133597 ms, Max: 1042.560346 ms</code></pre>
 <div id="footer">
 <div id="footer-text">
 Version 1.0<br>
-Last updated 2024-12-09 20:39:51 UTC
+Last updated 2024-12-09 21:18:17 UTC
 </div>
 </div>
 </body>
