@@ -4,6 +4,9 @@ on:
   push:
     branches:
       - main
+    paths:
+      - classic-demo/**
+      - mutiny-demo/**
   workflow_dispatch:
 jobs:
   build-images:

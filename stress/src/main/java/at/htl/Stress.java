@@ -13,8 +13,9 @@ import java.util.concurrent.atomic.AtomicLong;
 
 public class Stress {
     private static final AtomicInteger performedRequests = new AtomicInteger(0);
+    private static final AtomicInteger failures = new AtomicInteger(0);
     private static final AtomicLong maxResponseTime = new AtomicLong(Long.MIN_VALUE);
-    private static AtomicLong minResponseTime = new AtomicLong(Long.MAX_VALUE);
+    private static final AtomicLong minResponseTime = new AtomicLong(Long.MAX_VALUE);
 
     private static void printUsage() {
         System.err.println("[usage]: <url> <total-requests>");
@@ -52,7 +53,12 @@ public class Stress {
                             minResponseTime.getAndAccumulate(elapsed, Math::min);
                             maxResponseTime.getAndAccumulate(elapsed, Math::max);
                         })
-                        .thenRun(performedRequests::incrementAndGet);
+                        .thenRun(performedRequests::incrementAndGet)
+                        .exceptionally(t -> {
+                            failures.incrementAndGet();
+                            performedRequests.incrementAndGet();
+                            return null;
+                        });
             }
         }
 
@@ -71,5 +77,6 @@ public class Stress {
         System.out.printf("Avg: %f ms%n", totalElapsedNanos / (double) totalRequests / 1000000.0);
         System.out.printf("Min: %f ms%n", minResponseTime.get() / 1000000.0);
         System.out.printf("Max: %f ms%n", maxResponseTime.get() / 1000000.0);
+        System.out.printf("Failures: %d ms%n", failures.get());
     }
 }
