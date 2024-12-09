@@ -1696,9 +1696,10 @@ Die erstellten Nutzer werden in der Datenbank gespeichert. Bei <code>read</code>
 </span><span class="py">quarkus.datasource.username</span> <span class="p">=</span> <span class="s">app</span>
 <span class="py">quarkus.datasource.password</span> <span class="p">=</span> <span class="s">app</span>
 <span class="py">quarkus.datasource.jdbc.url</span> <span class="p">=</span> <span class="s">jdbc:postgresql://localhost:5432/db</span>
-<span class="err">%</span><span class="py">prod.quarkus.datasource.reactive.url</span> <span class="p">=</span> <span class="s">vertx-reactive:postgresql://postgres:5432/db</span>
+<span class="err">%</span><span class="py">prod.quarkus.datasource.jdbc.url</span> <span class="p">=</span> <span class="s">jdbc:postgresql://postgres:5432/db</span>
 
-<span class="err">%</span><span class="py">dev.quarkus.hibernate-orm.database.generation</span><span class="p">=</span><span class="s">drop-and-create</span></code></pre>
+<span class="err">%</span><span class="py">dev.quarkus.hibernate-orm.database.generation</span><span class="p">=</span><span class="s">drop-and-create</span>
+<span class="err">%</span><span class="py">prod.quarkus.hibernate-orm.database.generation</span><span class="p">=</span><span class="s">update</span></code></pre>
 </div>
 </div>
 <div class="paragraph">
@@ -1855,8 +1856,8 @@ Die erstellten Nutzer werden in der Datenbank gespeichert. Bei <code>read</code>
 <span class="err">%</span><span class="py">dev.quarkus.datasource.reactive.url</span> <span class="p">=</span> <span class="s">vertx-reactive:postgresql://localhost:5432/db</span>
 <span class="err">%</span><span class="py">prod.quarkus.datasource.reactive.url</span> <span class="p">=</span> <span class="s">vertx-reactive:postgresql://postgres:5432/db</span>
 
-
-<span class="err">%</span><span class="py">dev.quarkus.hibernate-orm.database.generation</span><span class="p">=</span><span class="s">drop-and-create</span></code></pre>
+<span class="err">%</span><span class="py">dev.quarkus.hibernate-orm.database.generation</span><span class="p">=</span><span class="s">drop-and-create</span>
+<span class="err">%</span><span class="py">prod.quarkus.hibernate-orm.database.generation</span><span class="p">=</span><span class="s">update</span></code></pre>
 </div>
 </div>
 <div class="paragraph">
@@ -2345,6 +2346,24 @@ Avg: 0.021387 ms, Min: 0.133597 ms, Max: 1042.560346 ms</code></pre>
 <li>
 <p><a href="https://inria.hal.science/hal-03409277/file/paper-author-version.pdf" class="bare">https://inria.hal.science/hal-03409277/file/paper-author-version.pdf</a></p>
 </li>
+<li>
+<p><a href="https://www.baeldung.com/java-future-completablefuture-rxjavas-observable" class="bare">https://www.baeldung.com/java-future-completablefuture-rxjavas-observable</a></p>
+</li>
+<li>
+<p><a href="https://smallrye.io/smallrye-mutiny/2.7.0/guides/completion-stage/" class="bare">https://smallrye.io/smallrye-mutiny/2.7.0/guides/completion-stage/</a></p>
+</li>
+<li>
+<p><a href="https://medium.com/javarevisited/java-completablefuture-c47ca8c885af" class="bare">https://medium.com/javarevisited/java-completablefuture-c47ca8c885af</a></p>
+</li>
+<li>
+<p><a href="https://docs.oracle.com/javase/8/docs/api/java/util/concurrent/Future.html" class="bare">https://docs.oracle.com/javase/8/docs/api/java/util/concurrent/Future.html</a></p>
+</li>
+<li>
+<p><a href="https://www.baeldung.com/java-completablefuture" class="bare">https://www.baeldung.com/java-completablefuture</a></p>
+</li>
+<li>
+<p><a href="https://medium.com/@kshitij-srivastav/mastering-back-pressure-and-reactive-programming-with-spring-webclient-ed152f3cd8de" class="bare">https://medium.com/@kshitij-srivastav/mastering-back-pressure-and-reactive-programming-with-spring-webclient-ed152f3cd8de</a></p>
+</li>
 </ul>
 </div>
 </div>
@@ -2353,7 +2372,7 @@ Avg: 0.021387 ms, Min: 0.133597 ms, Max: 1042.560346 ms</code></pre>
 <div id="footer">
 <div id="footer-text">
 Version 1.0<br>
-Last updated 2024-12-09 18:48:32 UTC
+Last updated 2024-12-09 20:39:51 UTC
 </div>
 </div>
 </body>
