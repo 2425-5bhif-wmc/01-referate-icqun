@@ -565,7 +565,7 @@ pre.rouge .gs {
 <div class="details">
 <span id="author" class="author">Julian Schludermann</span><br>
 <span id="revnumber">version 1.0,</span>
-<span id="revdate">2024-12-06</span>
+<span id="revdate">2024-12-09</span>
 </div>
 <div id="toc" class="toc2">
 <div id="toctitle">Table of Contents</div>
@@ -595,17 +595,23 @@ pre.rouge .gs {
 </ul>
 </li>
 <li><a href="#_anwendungsfälle_von_reaktivem_programmieren">9. Anwendungsfälle von reaktivem Programmieren</a></li>
-<li><a href="#_warum_reaktives_programmieren_in_franklyn_eingesetzt_wird">10. Warum reaktives Programmieren in Franklyn eingesetzt wird</a></li>
-<li><a href="#_demos">11. Demos</a>
-<ul class="sectlevel3">
-<li><a href="#_unterschied_classic_vs_mutiny">11.1. Unterschied classic vs mutiny</a></li>
-<li><a href="#_classic_imperativ">11.2. Classic (Imperativ)</a></li>
-<li><a href="#_mutiny_reaktiv">11.3. Mutiny (Reaktiv)</a></li>
+<li><a href="#_unit_vs_completablefuture">10. Uni&lt;T&gt; vs CompletableFuture</a>
+<ul class="sectlevel2">
+<li><a href="#_beispiel">10.1. Beispiel</a></li>
 </ul>
 </li>
-<li><a href="#_bonus_franklyn">12. Bonus: Franklyn</a></li>
-<li><a href="#_glossar">13. Glossar</a></li>
-<li><a href="#_quellen">14. Quellen</a></li>
+<li><a href="#_warum_reaktives_programmieren_in_franklyn_eingesetzt_wird">11. Warum reaktives Programmieren in Franklyn eingesetzt wird</a></li>
+<li><a href="#_demos">12. Demos</a>
+<ul class="sectlevel3">
+<li><a href="#_unterschied_classic_vs_mutiny">12.1. Unterschied classic vs mutiny</a></li>
+<li><a href="#_classic_imperativ">12.2. Classic (Imperativ)</a></li>
+<li><a href="#_mutiny_reaktiv">12.3. Mutiny (Reaktiv)</a></li>
+<li><a href="#_stress">12.4. Stress</a></li>
+</ul>
+</li>
+<li><a href="#_bonus_franklyn">13. Bonus: Franklyn</a></li>
+<li><a href="#_glossar">14. Glossar</a></li>
+<li><a href="#_quellen">15. Quellen</a></li>
 </ul>
 </div>
 </div>
@@ -1353,7 +1359,57 @@ Eine Quelle veröffentlicht nur dann Events, wenn sie von einem <strong>Subscrib
 </div>
 </div>
 <div class="sect1">
-<h2 id="_warum_reaktives_programmieren_in_franklyn_eingesetzt_wird"><a class="anchor" href="#_warum_reaktives_programmieren_in_franklyn_eingesetzt_wird"></a>10. Warum reaktives Programmieren in Franklyn eingesetzt wird</h2>
+<h2 id="_unit_vs_completablefuture"><a class="anchor" href="#_unit_vs_completablefuture"></a>10. Uni&lt;T&gt; vs CompletableFuture</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>Ein <code>CompletableFuture</code> ist ein seit Java 8 vertretener Datentyp, der das Ergebnis einer asynchronen Operation darstellt. Er dient als Platzhalter, bis das tatsächliche Ergebnis verfügbar ist.</p>
+</div>
+<div class="paragraph">
+<p>Gleich wie bei Mutiny Pipelines können Operationen aneinander gekettet werden (<code>then&lt;action&gt;()</code>) und Fehler behandelt werden (<code>exceptionally()</code>)</p>
+</div>
+<div class="paragraph">
+<p>Die Hauptunterschiede zwischen <code>Uni&lt;T&gt;</code> und <code>CompletableFuture</code> sind:</p>
+</div>
+<div class="paragraph">
+<p><strong>Ausführung</strong>:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>Completable Future: <strong>eager</strong> (sofort)</p>
+</li>
+<li>
+<p>Uni: <strong>lazy</strong> (erst nach <code>Subscription</code>)</p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p><strong>Caching</strong>:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>Completable Future: <strong>cached</strong> (Ergebnis wird gespeichert)</p>
+</li>
+<li>
+<p>Uni: <strong>not cached</strong> (jede neue <code>Subscription</code> verursacht eine neue Ausführung)</p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p><strong>Features</strong>:<br>
+Mutiny stellt neben dem <code>Uni&lt;T&gt;</code> Datentyp noch <code>Multi&lt;T&gt;</code> zur verfügung, welcher noch einige zusätzliche Dinge ermöglicht (z.B. unendliche Datenströme), die durch Futures nicht dargestellt werden können.</p>
+</div>
+<div class="sect2">
+<h3 id="_beispiel"><a class="anchor" href="#_beispiel"></a>10.1. Beispiel</h3>
+<div class="paragraph">
+<p>TODO: Future Projekt (mglw. stress Programm)</p>
+</div>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_warum_reaktives_programmieren_in_franklyn_eingesetzt_wird"><a class="anchor" href="#_warum_reaktives_programmieren_in_franklyn_eingesetzt_wird"></a>11. Warum reaktives Programmieren in Franklyn eingesetzt wird</h2>
 <div class="sectionbody">
 <div class="ulist">
 <ul>
@@ -1391,7 +1447,7 @@ Eine Quelle veröffentlicht nur dann Events, wenn sie von einem <strong>Subscrib
 </div>
 </div>
 <div class="sect1">
-<h2 id="_demos"><a class="anchor" href="#_demos"></a>11. Demos</h2>
+<h2 id="_demos"><a class="anchor" href="#_demos"></a>12. Demos</h2>
 <div class="sectionbody">
 <div class="paragraph">
 <p>Im <a href="https://github.com/2425-5bhif-wmc/01-referate-icqun">Repository</a> sind neben der Dokumentation auch noch 2 Demoprojekte aufzufinden:</p>
@@ -1547,7 +1603,7 @@ Die erstellten Nutzer werden in der Datenbank gespeichert. Bei <code>read</code>
 </div>
 </details>
 <div class="sect3">
-<h4 id="_unterschied_classic_vs_mutiny"><a class="anchor" href="#_unterschied_classic_vs_mutiny"></a>11.1. Unterschied classic vs mutiny</h4>
+<h4 id="_unterschied_classic_vs_mutiny"><a class="anchor" href="#_unterschied_classic_vs_mutiny"></a>12.1. Unterschied classic vs mutiny</h4>
 <div class="ulist">
 <ul>
 <li>
@@ -1560,14 +1616,14 @@ Die erstellten Nutzer werden in der Datenbank gespeichert. Bei <code>read</code>
 </div>
 </div>
 <div class="sect2">
-<h3 id="_classic_imperativ"><a class="anchor" href="#_classic_imperativ"></a>11.2. Classic (Imperativ)</h3>
+<h3 id="_classic_imperativ"><a class="anchor" href="#_classic_imperativ"></a>12.2. Classic (Imperativ)</h3>
 <div class="listingblock">
 <div class="title">Projekt erstellen</div>
 <div class="content">
 <pre class="rouge highlight"><code data-lang="shell">mvn io.quarkus.platform:quarkus-maven-plugin:3.17.3:create <span class="se">\</span>
     <span class="nt">-DprojectGroupId</span><span class="o">=</span>at.htl <span class="se">\</span>
     <span class="nt">-DprojectArtifactId</span><span class="o">=</span>classic-demo <span class="se">\</span>
-    <span class="nt">-Dextensions</span><span class="o">=</span><span class="s1">'rest-jackson, quarkus-hibernate-orm-panache, quarkus-jdbc-postgresql, smallrye-openapi'</span>
+    <span class="nt">-Dextensions</span><span class="o">=</span><span class="s1">'rest-jackson, quarkus-hibernate-orm-panache, quarkus-jdbc-postgresql, smallrye-openapi, smallrye-health'</span>
 <span class="nb">cd </span>classic-demo</code></pre>
 </div>
 </div>
@@ -1590,11 +1646,14 @@ Die erstellten Nutzer werden in der Datenbank gespeichert. Bei <code>read</code>
 <div class="listingblock">
 <div class="title">application.properties</div>
 <div class="content">
-<pre class="rouge highlight"><code data-lang="properties"><span class="py">quarkus.datasource.db-kind</span> <span class="p">=</span> <span class="s">postgresql</span>
-<span class="py">quarkus.datasource.username</span> <span class="p">=</span> <span class="s">app</span>
+<pre class="rouge highlight"><code data-lang="properties"><span class="py">quarkus.package.jar.type</span><span class="p">=</span><span class="s">uber-jar</span>
+<span class="py">quarkus.http.port</span><span class="p">=</span><span class="s">8080</span>
+
+<span class="hll"><span class="py">quarkus.datasource.db-kind</span> <span class="p">=</span> <span class="s">postgresql</span>
+</span><span class="py">quarkus.datasource.username</span> <span class="p">=</span> <span class="s">app</span>
 <span class="py">quarkus.datasource.password</span> <span class="p">=</span> <span class="s">app</span>
-<span class="hll"><span class="py">quarkus.datasource.jdbc.url</span> <span class="p">=</span> <span class="s">jdbc:postgresql://localhost:5432/db</span>
-</span>
+<span class="py">quarkus.datasource.jdbc.url</span> <span class="p">=</span> <span class="s">jdbc:postgresql://localhost:5432/db</span>
+
 <span class="err">%</span><span class="py">dev.quarkus.hibernate-orm.database.generation</span><span class="p">=</span><span class="s">drop-and-create</span></code></pre>
 </div>
 </div>
@@ -1709,14 +1768,14 @@ Die erstellten Nutzer werden in der Datenbank gespeichert. Bei <code>read</code>
 </details>
 </div>
 <div class="sect2">
-<h3 id="_mutiny_reaktiv"><a class="anchor" href="#_mutiny_reaktiv"></a>11.3. Mutiny (Reaktiv)</h3>
+<h3 id="_mutiny_reaktiv"><a class="anchor" href="#_mutiny_reaktiv"></a>12.3. Mutiny (Reaktiv)</h3>
 <div class="listingblock">
 <div class="title">Projekt erstellen</div>
 <div class="content">
 <pre class="rouge highlight"><code data-lang="shell">mvn io.quarkus.platform:quarkus-maven-plugin:3.17.3:create <span class="se">\</span>
     <span class="nt">-DprojectGroupId</span><span class="o">=</span>at.htl <span class="se">\</span>
     <span class="nt">-DprojectArtifactId</span><span class="o">=</span>mutiny-demo <span class="se">\</span>
-    <span class="nt">-Dextensions</span><span class="o">=</span><span class="s1">'rest-jackson, quarkus-hibernate-reactive-panache, quarkus-reactive-pg-client, smallrye-openapi'</span>
+    <span class="nt">-Dextensions</span><span class="o">=</span><span class="s1">'rest-jackson, quarkus-hibernate-reactive-panache, quarkus-reactive-pg-client, smallrye-openapi, smallrye-health'</span>
 <span class="nb">cd </span>mutiny-demo</code></pre>
 </div>
 </div>
@@ -1739,11 +1798,14 @@ Die erstellten Nutzer werden in der Datenbank gespeichert. Bei <code>read</code>
 <div class="listingblock">
 <div class="title">application.properties</div>
 <div class="content">
-<pre class="rouge highlight"><code data-lang="properties"><span class="py">quarkus.datasource.db-kind</span> <span class="p">=</span> <span class="s">postgresql</span>
-<span class="py">quarkus.datasource.username</span> <span class="p">=</span> <span class="s">app</span>
+<pre class="rouge highlight"><code data-lang="properties"><span class="py">quarkus.package.jar.type</span><span class="p">=</span><span class="s">uber-jar</span>
+<span class="py">quarkus.http.port</span><span class="p">=</span><span class="s">8081</span>
+
+<span class="hll"><span class="py">quarkus.datasource.db-kind</span> <span class="p">=</span> <span class="s">postgresql</span>
+</span><span class="py">quarkus.datasource.username</span> <span class="p">=</span> <span class="s">app</span>
 <span class="py">quarkus.datasource.password</span> <span class="p">=</span> <span class="s">app</span>
-<span class="hll"><span class="py">quarkus.datasource.reactive.url</span> <span class="p">=</span> <span class="s">vertx-reactive:postgresql://localhost:5432/db</span>
-</span>
+<span class="py">quarkus.datasource.reactive.url</span> <span class="p">=</span> <span class="s">vertx-reactive:postgresql://localhost:5432/db</span>
+
 <span class="err">%</span><span class="py">dev.quarkus.hibernate-orm.database.generation</span><span class="p">=</span><span class="s">drop-and-create</span></code></pre>
 </div>
 </div>
@@ -1858,16 +1920,34 @@ Die erstellten Nutzer werden in der Datenbank gespeichert. Bei <code>read</code>
 </div>
 </details>
 </div>
+<div class="sect2">
+<h3 id="_stress"><a class="anchor" href="#_stress"></a>12.4. Stress</h3>
+<div class="listingblock">
+<div class="title">Projekt erstellen</div>
+<div class="content">
+<pre class="rouge highlight"><code data-lang="shell">mvn archetype:generate <span class="nt">-DgroupId</span><span class="o">=</span>at.htl <span class="nt">-DartifactId</span><span class="o">=</span>stress <span class="nt">-DarchetypeArtifactId</span><span class="o">=</span>maven-archetype-quickstart <span class="nt">-DarchetypeVersion</span><span class="o">=</span>1.5 <span class="nt">-DinteractiveMode</span><span class="o">=</span><span class="nb">false</span></code></pre>
+</div>
+</div>
+<div class="listingblock">
+<div class="title">Run script (run.sh)</div>
+<div class="content">
+<pre class="rouge highlight"><code data-lang="shell"><span class="c">#!/usr/bin/env bash</span>
+
+mvn clean package
+java <span class="nt">-cp</span> target/stress-1.0.jar at.htl.Stress</code></pre>
+</div>
+</div>
+</div>
 </div>
 </div>
 <div class="sect1">
-<h2 id="_bonus_franklyn"><a class="anchor" href="#_bonus_franklyn"></a>12. Bonus: Franklyn</h2>
+<h2 id="_bonus_franklyn"><a class="anchor" href="#_bonus_franklyn"></a>13. Bonus: Franklyn</h2>
 <div class="sectionbody">
 
 </div>
 </div>
 <div class="sect1">
-<h2 id="_glossar"><a class="anchor" href="#_glossar"></a>13. Glossar</h2>
+<h2 id="_glossar"><a class="anchor" href="#_glossar"></a>14. Glossar</h2>
 <div class="sectionbody">
 <div class="ulist">
 <ul>
@@ -1957,7 +2037,7 @@ Die erstellten Nutzer werden in der Datenbank gespeichert. Bei <code>read</code>
 </div>
 </div>
 <div class="sect1">
-<h2 id="_quellen"><a class="anchor" href="#_quellen"></a>14. Quellen</h2>
+<h2 id="_quellen"><a class="anchor" href="#_quellen"></a>15. Quellen</h2>
 <div class="sectionbody">
 <div class="ulist">
 <ul>
@@ -2077,7 +2157,7 @@ Die erstellten Nutzer werden in der Datenbank gespeichert. Bei <code>read</code>
 <div id="footer">
 <div id="footer-text">
 Version 1.0<br>
-Last updated 2024-12-06 07:00:04 UTC
+Last updated 2024-12-09 07:11:31 UTC
 </div>
 </div>
 </body>
