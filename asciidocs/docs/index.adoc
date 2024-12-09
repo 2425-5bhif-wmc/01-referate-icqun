@@ -628,3 +628,10 @@ Avg: 0.021387 ms, Min: 0.133597 ms, Max: 1042.560346 ms
 * https://de.wikipedia.org/wiki/Imperative_Programmierung
 * https://quarkus.io/guides/hibernate-reactive-panache
 * https://inria.hal.science/hal-03409277/file/paper-author-version.pdf
+* https://www.baeldung.com/java-future-completablefuture-rxjavas-observable
+* https://smallrye.io/smallrye-mutiny/2.7.0/guides/completion-stage/
+* https://medium.com/javarevisited/java-completablefuture-c47ca8c885af
+* https://docs.oracle.com/javase/8/docs/api/java/util/concurrent/Future.html
+* https://www.baeldung.com/java-completablefuture
+* https://medium.com/@kshitij-srivastav/mastering-back-pressure-and-reactive-programming-with-spring-webclient-ed152f3cd8de
+
