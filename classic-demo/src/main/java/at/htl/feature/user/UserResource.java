@@ -1,6 +1,5 @@
 package at.htl.feature.user;
 
-import io.smallrye.mutiny.Uni;
 import jakarta.inject.Inject;
 import jakarta.transaction.Transactional;
 import jakarta.ws.rs.*;
@@ -41,10 +40,10 @@ public class UserResource {
         // = Blocking =
 
         return new UserDto(
-                        user.getId(),
-                        user.getFirstName(),
-                        user.getLastName(),
-                        user.getEmail()
+                user.getId(),
+                user.getFirstName(),
+                user.getLastName(),
+                user.getEmail()
         );
     }
     // end::get_simple_classic[]

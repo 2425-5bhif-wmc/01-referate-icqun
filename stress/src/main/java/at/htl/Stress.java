@@ -47,6 +47,7 @@ public class Stress {
             start = System.nanoTime();
             for (int i = 0; i < totalRequests; i++) {
                 long requestStart = System.nanoTime();
+                // tag::send_webrequest[]
                 client.sendAsync(getAllRequest, HttpResponse.BodyHandlers.ofString())
                         .thenRun(() -> {
                             long elapsed = System.nanoTime() - requestStart;
@@ -59,6 +60,7 @@ public class Stress {
                             performedRequests.incrementAndGet();
                             return null;
                         });
+                // end::send_webrequest[]
             }
         }
 
@@ -77,6 +79,6 @@ public class Stress {
         System.out.printf("Avg: %f ms%n", totalElapsedNanos / (double) totalRequests / 1000000.0);
         System.out.printf("Min: %f ms%n", minResponseTime.get() / 1000000.0);
         System.out.printf("Max: %f ms%n", maxResponseTime.get() / 1000000.0);
-        System.out.printf("Failures: %d ms%n", failures.get());
+        System.out.printf("Failures: %d%n", failures.get());
     }
 }

@@ -1,0 +1,32 @@
+left to right direction
+
+skinparam linetype ortho
+
+skinparam component<<current>> {
+    BorderColor red
+    BorderThickness 1
+}
+
+!if ($highlight_component == "classic")
+    component [classic-demo\n\t- imperativ\n\t- blockierend] as c <<current>>
+!else
+    component [classic-demo\n\t- imperativ\n\t- blockierend] as c
+!endif
+
+!if ($highlight_component == "mutiny")
+    component [mutiny-demo\n\t- reaktiv\n\t- asynchron] as mt <<current>>
+!else
+    component [mutiny-demo\n\t- reaktiv\n\t- asynchron] as mt
+!endif
+
+!if ($highlight_component == "stress")
+    component [stress] as st <<current>>
+!else
+    component [stress] as st
+!endif
+
+st --> c: requests
+c --> st
+
+st --> mt: requests
+mt --> st

@@ -312,7 +312,26 @@ Die Hauptunterschiede zwischen `Uni<T>` und `CompletableFuture` sind:
 Mutiny stellt neben dem `Uni<T>` Datentyp noch `Multi<T>` zur verfügung, welcher noch einige zusätzliche Dinge ermöglicht (z.B. unendliche Datenströme), die durch Futures nicht dargestellt werden können.
 
 === Beispiel
-TODO: Future Projekt (mglw. stress Programm)
+.Android ToDo App: Load ToDos
+[source,java]
+----
+CompletableFuture
+                .supplyAsync(todoClient::all)
+                .thenAccept(store::setTodos)
+                .exceptionally(e -> {
+                    Log.e(TAG, "Error loading Todos!", e);
+                    return null;
+                });
+----
+
+.HTTP Request (HttpClient)
+[%collapsible]
+====
+[source,java, indent=0]
+----
+include::../../stress/src/main/java/at/htl/Stress.java[tag=send_webrequest]
+----
+====
 
 
 == Warum reaktives Programmieren in Franklyn eingesetzt wird
@@ -325,12 +344,19 @@ TODO: Future Projekt (mglw. stress Programm)
 ** Regelmäßige Screenshot-uploads
 
 == Demos
+[plantuml]
+----
+include::puml/demos.puml[]
+----
+
 Im https://github.com/2425-5bhif-wmc/01-referate-icqun[Repository] sind neben der Dokumentation auch noch 2 Demoprojekte aufzufinden:
 
 image::demo-projects.png[]
 
 Beide Projekte implementieren einen kleinen REST-Service, mit einem `User` Endpunkt, welcher `create` und `read` Operationen zur Verfügung stellt.
 Die erstellten Nutzer werden in der Datenbank gespeichert. Bei `read` Operationen wird das um einige "sensible" Daten reduzierte `UserDto` zurückgeliefert.
+
+Weiters gibt es noch das *stress* Projekt, welches ein kleines Tool zum Testen der Performance der beiden Applikationen verwendet wird.
 
 *Klassen*
 
@@ -361,12 +387,18 @@ include::../../mutiny-demo/src/main/java/at/htl/feature/user/UserDto.java[]
 ----
 ====
 
-==== Unterschied classic vs mutiny
+=== Unterschied classic vs mutiny
 * *classic-demo*: Implementierung der REST Endpunkte ist durch "klassische" blockierende Datenbankzugriffe umgesetzt.
 
 * *mutiny-demo*: Implementierung der REST Endpunkte mit reaktiven asynchronen Datenbankzugriffen.
 
 === Classic (Imperativ)
+[plantuml]
+----
+!$highlight_component = "classic"
+include::puml/demos.puml[]
+----
+
 .Projekt erstellen
 [source, shell]
 ----
@@ -413,6 +445,12 @@ include::../../classic-demo/src/main/java/at/htl/feature/user/UserResource.java[
 ====
 
 === Mutiny (Reaktiv)
+[plantuml]
+----
+!$highlight_component = "mutiny"
+include::puml/demos.puml[]
+----
+
 .Projekt erstellen
 [source, shell]
 ----
@@ -459,6 +497,14 @@ include::../../mutiny-demo/src/main/java/at/htl/feature/user/UserResource.java[]
 ====
 
 === Stress
+[plantuml]
+----
+!$highlight_component = "stress"
+include::puml/demos.puml[]
+----
+
+Neben den beiden Implementierungsvarianten gibt es auch noch ein kleines `Stress` Programm, welches eine große Menge an Requests an eine Applikation schicken kann.
+
 .Projekt erstellen
 [source, shell]
 ----
@@ -470,6 +516,57 @@ mvn archetype:generate -DgroupId=at.htl -DartifactId=stress -DarchetypeArtifactI
 ----
 include::../../stress/run.sh[]
 ----
+
+.main
+[%collapsible]
+====
+[source,java]
+----
+include::../../stress/src/main/java/at/htl/Stress.java[]
+----
+====
+
+Insgesamt gab es je Implementierungsvariante 3 Durchläufe bei denen jeweils 500 000 `GET` Requests auf den `GetAllUsers` Endpunkt durchgeführt wurden.
+
+.Ergebnisse
+[%collapsible]
+====
+[source,text]
+----
+# Imperative Variante
+./run.sh "http://<ip>:8080" 500000
+Performing 500,000 requests
+
+Failures: 0
+Total: 13937.379654 ms
+Avg: 0.027875 ms, Min: 0.181905 ms, Max: 6038.797575 ms
+
+Failures: 0
+Total: 16752.901342 ms
+Avg: 0.033506 ms, Min: 0.159324 ms, Max: 9144.043005 ms
+
+Failures: 0
+Total: 10595.948826 ms
+Avg: 0.021192 ms, Min: 0.140273 ms, Max: 3261.123551 ms
+
+# Reaktive Variante
+./run.sh "http://<ip>:8081" 500000
+Performing 500,000 requests
+
+Failures: 0
+Total: 12575.770490 ms
+Avg: 0.025152 ms, Min: 0.137133 ms, Max: 5480.610561 ms
+
+Failures: 0
+Total: 14015.646342 ms
+Avg: 0.028031 ms, Min: 0.145043 ms, Max: 5915.921017 ms
+
+Failures: 0
+Total: 10693.279378 ms
+Avg: 0.021387 ms, Min: 0.133597 ms, Max: 1042.560346 ms
+----
+====
+
 
 == Bonus: Franklyn
 
