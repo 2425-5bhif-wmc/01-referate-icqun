@@ -16,7 +16,7 @@ spec:
     spec:
       containers:
         - name: appsrv
-          image: ghcr.io/2425-5bhif-wmc/01-referate-icqun/mutiny-demo:latest
+          image: ghcr.io/icqun/mutiny-demo:latest
           imagePullPolicy: Always
           ports:
             - containerPort: 8081

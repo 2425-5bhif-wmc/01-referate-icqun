@@ -15,10 +15,10 @@ jobs:
         include:
           - dockerfile: ./classic-demo/src/main/docker/Dockerfile
             context: ./classic-demo
-            tag: ghcr.io/${{ github.repository }}/classic-demo:latest
+            tag: ghcr.io/icqun/classic-demo:latest
           - dockerfile: ./mutiny-demo/src/main/docker/Dockerfile
             context: ./mutiny-demo
-            tag: ghcr.io/${{ github.repository }}/mutiny-demo:latest
+            tag: ghcr.io/icqun/mutiny-demo:latest
     steps:
       - name: Check out repository code
         uses: actions/checkout@v4

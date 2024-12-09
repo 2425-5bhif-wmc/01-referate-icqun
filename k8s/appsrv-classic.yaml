@@ -16,7 +16,7 @@ spec:
     spec:
       containers:
         - name: appsrv
-          image: ghcr.io/2425-5bhif-wmc/01-referate-icqun/classic-demo:latest
+          image: ghcr.io/icqun/classic-demo:latest
           imagePullPolicy: Always
           ports:
             - containerPort: 8080
