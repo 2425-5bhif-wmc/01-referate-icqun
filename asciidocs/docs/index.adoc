@@ -567,7 +567,6 @@ Avg: 0.021387 ms, Min: 0.133597 ms, Max: 1042.560346 ms
 ----
 ====
 
-
 == Bonus: Franklyn
 
 == Glossar
