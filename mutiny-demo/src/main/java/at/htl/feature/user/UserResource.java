@@ -60,8 +60,12 @@ public class UserResource {
     public Uni<Response> createNew(User user, @Context UriInfo uriInfo) { // <.>
         return Uni.createFrom()
                 .item(user) // <.>
-                .onItem().ifNull().failWith(new WebApplicationException(Response.Status.BAD_REQUEST)) // <.>
-                .onItem().ifNotNull().transformToUni(ignored -> userRepository.persistAndFlush(user)) // <.>
+                .onItem()
+                    .ifNull()
+                    .failWith(new WebApplicationException(Response.Status.BAD_REQUEST)) // <.>
+                .onItem()
+                    .ifNotNull()
+                    .transformToUni(ignored -> userRepository.persistAndFlush(user)) // <.>
                 .onItem().transform(u -> { // <.>
                     URI uri = uriInfo
                             .getAbsolutePathBuilder()
