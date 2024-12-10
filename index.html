@@ -565,12 +565,12 @@ pre.rouge .gs {
 <div class="details">
 <span id="author" class="author">Julian Schludermann</span><br>
 <span id="revnumber">version 1.0,</span>
-<span id="revdate">2024-12-09</span>
+<span id="revdate">2024-12-10</span>
 </div>
 <div id="toc" class="toc2">
 <div id="toctitle">Table of Contents</div>
 <ul class="sectlevel1">
-<li><a href="#_was_ist_mutiny">1. Was ist Mutiny</a>
+<li><a href="#_was_ist_mutiny">1. Was ist Mutiny?</a>
 <ul class="sectlevel2">
 <li><a href="#_was_versteht_man_unter_asynchron">1.1. Was versteht man unter asynchron?</a></li>
 <li><a href="#_reactive">1.2. Reactive</a></li>
@@ -617,7 +617,7 @@ pre.rouge .gs {
 </div>
 <div id="content">
 <div class="sect1">
-<h2 id="_was_ist_mutiny"><a class="anchor" href="#_was_ist_mutiny"></a>1. Was ist Mutiny</h2>
+<h2 id="_was_ist_mutiny"><a class="anchor" href="#_was_ist_mutiny"></a>1. Was ist Mutiny?</h2>
 <div class="sectionbody">
 <div class="paragraph">
 <p><strong>Mutiny</strong> ist eine Programmbibliothek zur <span class="underline">reaktiven</span>, <span class="underline">event getriebenen</span>, <span class="underline">asynchronen</span> Programmierung von Applikationen.</p>
@@ -965,6 +965,11 @@ Eine Quelle veröffentlicht nur dann Events, wenn sie von einem <strong>Subscrib
 <div class="sect1">
 <h2 id="_codebeispiel_für_pipelines"><a class="anchor" href="#_codebeispiel_für_pipelines"></a>6. Codebeispiel für Pipelines</h2>
 <div class="sectionbody">
+<div class="imageblock">
+<div class="content">
+<img src="images/diag-plantuml-md5-f5d265ba380ded12995fcab68df2e2d0.png" alt="Diagram" width="226" height="158">
+</div>
+</div>
 <div class="listingblock">
 <div class="title">Reaktiver get by ID REST Endpunkt</div>
 <div class="content">
@@ -1023,8 +1028,12 @@ Eine Quelle veröffentlicht nur dann Events, wenn sie von einem <strong>Subscrib
 <span class="kd">public</span> <span class="nc">Uni</span><span class="o">&lt;</span><span class="nc">Response</span><span class="o">&gt;</span> <span class="nf">createNew</span><span class="o">(</span><span class="nc">User</span> <span class="n">user</span><span class="o">,</span> <span class="nd">@Context</span> <span class="nc">UriInfo</span> <span class="n">uriInfo</span><span class="o">)</span> <span class="o">{</span> <i class="conum" data-value="2"></i><b>(2)</b>
     <span class="k">return</span> <span class="nc">Uni</span><span class="o">.</span><span class="na">createFrom</span><span class="o">()</span>
             <span class="o">.</span><span class="na">item</span><span class="o">(</span><span class="n">user</span><span class="o">)</span> <i class="conum" data-value="3"></i><b>(3)</b>
-            <span class="o">.</span><span class="na">onItem</span><span class="o">().</span><span class="na">ifNull</span><span class="o">().</span><span class="na">failWith</span><span class="o">(</span><span class="k">new</span> <span class="nc">WebApplicationException</span><span class="o">(</span><span class="nc">Response</span><span class="o">.</span><span class="na">Status</span><span class="o">.</span><span class="na">BAD_REQUEST</span><span class="o">))</span> <i class="conum" data-value="4"></i><b>(4)</b>
-            <span class="o">.</span><span class="na">onItem</span><span class="o">().</span><span class="na">ifNotNull</span><span class="o">().</span><span class="na">transformToUni</span><span class="o">(</span><span class="n">ignored</span> <span class="o">-&gt;</span> <span class="n">userRepository</span><span class="o">.</span><span class="na">persistAndFlush</span><span class="o">(</span><span class="n">user</span><span class="o">))</span> <i class="conum" data-value="5"></i><b>(5)</b>
+            <span class="o">.</span><span class="na">onItem</span><span class="o">()</span>
+                <span class="o">.</span><span class="na">ifNull</span><span class="o">()</span>
+                <span class="o">.</span><span class="na">failWith</span><span class="o">(</span><span class="k">new</span> <span class="nc">WebApplicationException</span><span class="o">(</span><span class="nc">Response</span><span class="o">.</span><span class="na">Status</span><span class="o">.</span><span class="na">BAD_REQUEST</span><span class="o">))</span> <i class="conum" data-value="4"></i><b>(4)</b>
+            <span class="o">.</span><span class="na">onItem</span><span class="o">()</span>
+                <span class="o">.</span><span class="na">ifNotNull</span><span class="o">()</span>
+                <span class="o">.</span><span class="na">transformToUni</span><span class="o">(</span><span class="n">ignored</span> <span class="o">-&gt;</span> <span class="n">userRepository</span><span class="o">.</span><span class="na">persistAndFlush</span><span class="o">(</span><span class="n">user</span><span class="o">))</span> <i class="conum" data-value="5"></i><b>(5)</b>
             <span class="o">.</span><span class="na">onItem</span><span class="o">().</span><span class="na">transform</span><span class="o">(</span><span class="n">u</span> <span class="o">-&gt;</span> <span class="o">{</span> <i class="conum" data-value="6"></i><b>(6)</b>
                 <span class="no">URI</span> <span class="n">uri</span> <span class="o">=</span> <span class="n">uriInfo</span>
                         <span class="o">.</span><span class="na">getAbsolutePathBuilder</span><span class="o">()</span>
@@ -1125,7 +1134,7 @@ Eine Quelle veröffentlicht nur dann Events, wenn sie von einem <strong>Subscrib
 </tr>
 <tr>
 <td class="tableblock halign-left valign-top"><div class="content"><div class="paragraph">
-<p><code>.call(Function&lt;T,Uni&lt;&gt;&gt; consumer)</code></p>
+<p><code>.call(Function&lt;T,Uni&lt;Void&gt;&gt; consumer)</code></p>
 </div></div></td>
 <td class="tableblock halign-left valign-top"><div class="content"><div class="paragraph">
 <p>Sehr ähnlich zu <code>.invoke()</code>, mit dem Unterschied, dass der ausgeführte Consumer asynchron ausgeführt wird. Das Event bleibt erneut unverändert.</p>
@@ -1259,8 +1268,12 @@ Eine Quelle veröffentlicht nur dann Events, wenn sie von einem <strong>Subscrib
 <span class="kd">public</span> <span class="nc">Uni</span><span class="o">&lt;</span><span class="nc">Response</span><span class="o">&gt;</span> <span class="nf">createNew</span><span class="o">(</span><span class="nc">User</span> <span class="n">user</span><span class="o">,</span> <span class="nd">@Context</span> <span class="nc">UriInfo</span> <span class="n">uriInfo</span><span class="o">)</span> <span class="o">{</span> <i class="conum" data-value="2"></i><b>(2)</b>
     <span class="k">return</span> <span class="nc">Uni</span><span class="o">.</span><span class="na">createFrom</span><span class="o">()</span>
             <span class="o">.</span><span class="na">item</span><span class="o">(</span><span class="n">user</span><span class="o">)</span> <i class="conum" data-value="3"></i><b>(3)</b>
-            <span class="o">.</span><span class="na">onItem</span><span class="o">().</span><span class="na">ifNull</span><span class="o">().</span><span class="na">failWith</span><span class="o">(</span><span class="k">new</span> <span class="nc">WebApplicationException</span><span class="o">(</span><span class="nc">Response</span><span class="o">.</span><span class="na">Status</span><span class="o">.</span><span class="na">BAD_REQUEST</span><span class="o">))</span> <i class="conum" data-value="4"></i><b>(4)</b>
-            <span class="o">.</span><span class="na">onItem</span><span class="o">().</span><span class="na">ifNotNull</span><span class="o">().</span><span class="na">transformToUni</span><span class="o">(</span><span class="n">ignored</span> <span class="o">-&gt;</span> <span class="n">userRepository</span><span class="o">.</span><span class="na">persistAndFlush</span><span class="o">(</span><span class="n">user</span><span class="o">))</span> <i class="conum" data-value="5"></i><b>(5)</b>
+            <span class="o">.</span><span class="na">onItem</span><span class="o">()</span>
+                <span class="o">.</span><span class="na">ifNull</span><span class="o">()</span>
+                <span class="o">.</span><span class="na">failWith</span><span class="o">(</span><span class="k">new</span> <span class="nc">WebApplicationException</span><span class="o">(</span><span class="nc">Response</span><span class="o">.</span><span class="na">Status</span><span class="o">.</span><span class="na">BAD_REQUEST</span><span class="o">))</span> <i class="conum" data-value="4"></i><b>(4)</b>
+            <span class="o">.</span><span class="na">onItem</span><span class="o">()</span>
+                <span class="o">.</span><span class="na">ifNotNull</span><span class="o">()</span>
+                <span class="o">.</span><span class="na">transformToUni</span><span class="o">(</span><span class="n">ignored</span> <span class="o">-&gt;</span> <span class="n">userRepository</span><span class="o">.</span><span class="na">persistAndFlush</span><span class="o">(</span><span class="n">user</span><span class="o">))</span> <i class="conum" data-value="5"></i><b>(5)</b>
             <span class="o">.</span><span class="na">onItem</span><span class="o">().</span><span class="na">transform</span><span class="o">(</span><span class="n">u</span> <span class="o">-&gt;</span> <span class="o">{</span> <i class="conum" data-value="6"></i><b>(6)</b>
                 <span class="no">URI</span> <span class="n">uri</span> <span class="o">=</span> <span class="n">uriInfo</span>
                         <span class="o">.</span><span class="na">getAbsolutePathBuilder</span><span class="o">()</span>
@@ -1950,8 +1963,12 @@ Die erstellten Nutzer werden in der Datenbank gespeichert. Bei <code>read</code>
     <span class="kd">public</span> <span class="nc">Uni</span><span class="o">&lt;</span><span class="nc">Response</span><span class="o">&gt;</span> <span class="nf">createNew</span><span class="o">(</span><span class="nc">User</span> <span class="n">user</span><span class="o">,</span> <span class="nd">@Context</span> <span class="nc">UriInfo</span> <span class="n">uriInfo</span><span class="o">)</span> <span class="o">{</span> <i class="conum" data-value="6"></i><b>(6)</b>
         <span class="k">return</span> <span class="nc">Uni</span><span class="o">.</span><span class="na">createFrom</span><span class="o">()</span>
                 <span class="o">.</span><span class="na">item</span><span class="o">(</span><span class="n">user</span><span class="o">)</span> <i class="conum" data-value="7"></i><b>(7)</b>
-                <span class="o">.</span><span class="na">onItem</span><span class="o">().</span><span class="na">ifNull</span><span class="o">().</span><span class="na">failWith</span><span class="o">(</span><span class="k">new</span> <span class="nc">WebApplicationException</span><span class="o">(</span><span class="nc">Response</span><span class="o">.</span><span class="na">Status</span><span class="o">.</span><span class="na">BAD_REQUEST</span><span class="o">))</span> <i class="conum" data-value="8"></i><b>(8)</b>
-                <span class="o">.</span><span class="na">onItem</span><span class="o">().</span><span class="na">ifNotNull</span><span class="o">().</span><span class="na">transformToUni</span><span class="o">(</span><span class="n">ignored</span> <span class="o">-&gt;</span> <span class="n">userRepository</span><span class="o">.</span><span class="na">persistAndFlush</span><span class="o">(</span><span class="n">user</span><span class="o">))</span> <i class="conum" data-value="9"></i><b>(9)</b>
+                <span class="o">.</span><span class="na">onItem</span><span class="o">()</span>
+                    <span class="o">.</span><span class="na">ifNull</span><span class="o">()</span>
+                    <span class="o">.</span><span class="na">failWith</span><span class="o">(</span><span class="k">new</span> <span class="nc">WebApplicationException</span><span class="o">(</span><span class="nc">Response</span><span class="o">.</span><span class="na">Status</span><span class="o">.</span><span class="na">BAD_REQUEST</span><span class="o">))</span> <i class="conum" data-value="8"></i><b>(8)</b>
+                <span class="o">.</span><span class="na">onItem</span><span class="o">()</span>
+                    <span class="o">.</span><span class="na">ifNotNull</span><span class="o">()</span>
+                    <span class="o">.</span><span class="na">transformToUni</span><span class="o">(</span><span class="n">ignored</span> <span class="o">-&gt;</span> <span class="n">userRepository</span><span class="o">.</span><span class="na">persistAndFlush</span><span class="o">(</span><span class="n">user</span><span class="o">))</span> <i class="conum" data-value="9"></i><b>(9)</b>
                 <span class="o">.</span><span class="na">onItem</span><span class="o">().</span><span class="na">transform</span><span class="o">(</span><span class="n">u</span> <span class="o">-&gt;</span> <span class="o">{</span> <i class="conum" data-value="10"></i><b>(10)</b>
                     <span class="no">URI</span> <span class="n">uri</span> <span class="o">=</span> <span class="n">uriInfo</span>
                             <span class="o">.</span><span class="na">getAbsolutePathBuilder</span><span class="o">()</span>
@@ -2388,7 +2405,7 @@ Failures: 1</code></pre>
 <div id="footer">
 <div id="footer-text">
 Version 1.0<br>
-Last updated 2024-12-09 21:18:17 UTC
+Last updated 2024-12-10 11:49:57 UTC
 </div>
 </div>
 </body>
