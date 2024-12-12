@@ -1468,7 +1468,7 @@ Mutiny stellt neben dem <code>Uni&lt;T&gt;</code> Datentyp noch <code>Multi&lt;T
 <div class="content">
 <div class="listingblock">
 <div class="content">
-<pre class="rouge highlight"><code data-lang="java"><span class="n">client</span><span class="o">.</span><span class="na">sendAsync</span><span class="o">(</span><span class="n">getAllRequest</span><span class="o">,</span> <span class="nc">HttpResponse</span><span class="o">.</span><span class="na">BodyHandlers</span><span class="o">.</span><span class="na">ofString</span><span class="o">())</span>
+<pre class="rouge highlight"><code data-lang="java"><span class="n">client</span><span class="o">.</span><span class="na">sendAsync</span><span class="o">(</span><span class="n">request</span><span class="o">,</span> <span class="nc">HttpResponse</span><span class="o">.</span><span class="na">BodyHandlers</span><span class="o">.</span><span class="na">ofString</span><span class="o">())</span>
         <span class="o">.</span><span class="na">thenRun</span><span class="o">(()</span> <span class="o">-&gt;</span> <span class="o">{</span>
             <span class="kt">long</span> <span class="n">elapsed</span> <span class="o">=</span> <span class="nc">System</span><span class="o">.</span><span class="na">nanoTime</span><span class="o">()</span> <span class="o">-</span> <span class="n">requestStart</span><span class="o">;</span>
             <span class="n">minResponseTime</span><span class="o">.</span><span class="na">getAndAccumulate</span><span class="o">(</span><span class="n">elapsed</span><span class="o">,</span> <span class="nl">Math:</span><span class="o">:</span><span class="n">min</span><span class="o">);</span>
@@ -2049,9 +2049,10 @@ Die erstellten Nutzer werden in der Datenbank gespeichert. Bei <code>read</code>
 <pre class="rouge highlight"><code data-lang="shell"><span class="c">#!/usr/bin/env bash</span>
 
 <span class="nb">set</span> <span class="nt">-e</span>
+<span class="nb">shift
 
-mvn clean package
-java <span class="nt">-cp</span> target/stress-1.0.jar at.htl.Stress <span class="s2">"</span><span class="nv">$1</span><span class="s2">"</span> <span class="s2">"</span><span class="nv">$2</span><span class="s2">"</span></code></pre>
+</span>mvn clean package
+java <span class="nt">-cp</span> target/stress-1.0.jar at.htl.Stress <span class="s2">"</span><span class="nv">$@</span><span class="s2">"</span></code></pre>
 </div>
 </div>
 <details>
@@ -2065,10 +2066,6 @@ java <span class="nt">-cp</span> target/stress-1.0.jar at.htl.Stress <span class
 <span class="kn">import</span> <span class="nn">java.net.http.HttpClient</span><span class="o">;</span>
 <span class="kn">import</span> <span class="nn">java.net.http.HttpRequest</span><span class="o">;</span>
 <span class="kn">import</span> <span class="nn">java.net.http.HttpResponse</span><span class="o">;</span>
-<span class="kn">import</span> <span class="nn">java.util.ArrayList</span><span class="o">;</span>
-<span class="kn">import</span> <span class="nn">java.util.Arrays</span><span class="o">;</span>
-<span class="kn">import</span> <span class="nn">java.util.concurrent.CompletableFuture</span><span class="o">;</span>
-<span class="kn">import</span> <span class="nn">java.util.concurrent.ConcurrentLinkedQueue</span><span class="o">;</span>
 <span class="kn">import</span> <span class="nn">java.util.concurrent.atomic.AtomicInteger</span><span class="o">;</span>
 <span class="kn">import</span> <span class="nn">java.util.concurrent.atomic.AtomicLong</span><span class="o">;</span>
 
@@ -2079,37 +2076,61 @@ java <span class="nt">-cp</span> target/stress-1.0.jar at.htl.Stress <span class
     <span class="kd">private</span> <span class="kd">static</span> <span class="kd">final</span> <span class="nc">AtomicLong</span> <span class="n">minResponseTime</span> <span class="o">=</span> <span class="k">new</span> <span class="nc">AtomicLong</span><span class="o">(</span><span class="nc">Long</span><span class="o">.</span><span class="na">MAX_VALUE</span><span class="o">);</span>
 
     <span class="kd">private</span> <span class="kd">static</span> <span class="kt">void</span> <span class="nf">printUsage</span><span class="o">()</span> <span class="o">{</span>
-        <span class="nc">System</span><span class="o">.</span><span class="na">err</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="s">"[usage]: &lt;url&gt; &lt;total-requests&gt;"</span><span class="o">);</span>
+        <span class="nc">System</span><span class="o">.</span><span class="na">err</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="s">"[usage]: &lt;url&gt; &lt;total-requests&gt; &lt;mode&gt;"</span><span class="o">);</span>
         <span class="nc">System</span><span class="o">.</span><span class="na">err</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="s">"where total-requests &gt; 0"</span><span class="o">);</span>
+        <span class="nc">System</span><span class="o">.</span><span class="na">err</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="s">"mode is one of GET,POST"</span><span class="o">);</span>
     <span class="o">}</span>
 
     <span class="kd">public</span> <span class="kd">static</span> <span class="kt">void</span> <span class="nf">main</span><span class="o">(</span><span class="nc">String</span><span class="o">[]</span> <span class="n">args</span><span class="o">)</span> <span class="o">{</span>
-        <span class="k">if</span> <span class="o">(</span><span class="n">args</span><span class="o">.</span><span class="na">length</span> <span class="o">&lt;</span> <span class="mi">2</span><span class="o">)</span> <span class="o">{</span>
+        <span class="k">if</span> <span class="o">(</span><span class="n">args</span><span class="o">.</span><span class="na">length</span> <span class="o">&lt;</span> <span class="mi">3</span><span class="o">)</span> <span class="o">{</span>
             <span class="n">printUsage</span><span class="o">();</span>
             <span class="k">return</span><span class="o">;</span>
         <span class="o">}</span>
 
         <span class="nc">String</span> <span class="n">url</span> <span class="o">=</span> <span class="n">args</span><span class="o">[</span><span class="mi">0</span><span class="o">];</span>
         <span class="kt">int</span> <span class="n">totalRequests</span> <span class="o">=</span> <span class="nc">Integer</span><span class="o">.</span><span class="na">parseInt</span><span class="o">(</span><span class="n">args</span><span class="o">[</span><span class="mi">1</span><span class="o">]);</span>
+        <span class="nc">String</span> <span class="n">mode</span> <span class="o">=</span> <span class="n">args</span><span class="o">[</span><span class="mi">2</span><span class="o">];</span>
         <span class="nc">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">printf</span><span class="o">(</span><span class="s">"Performing %,d requests%n"</span><span class="o">,</span> <span class="n">totalRequests</span><span class="o">);</span>
 
-        <span class="k">if</span> <span class="o">(</span><span class="n">totalRequests</span> <span class="o">&lt;=</span> <span class="mi">0</span><span class="o">){</span>
+        <span class="k">if</span> <span class="o">(</span><span class="n">totalRequests</span> <span class="o">&lt;=</span> <span class="mi">0</span><span class="o">)</span> <span class="o">{</span>
+            <span class="n">printUsage</span><span class="o">();</span>
+            <span class="k">return</span><span class="o">;</span>
+        <span class="o">}</span>
+
+        <span class="nc">HttpRequest</span> <span class="n">request</span><span class="o">;</span>
+
+        <span class="k">if</span> <span class="o">(</span><span class="n">mode</span><span class="o">.</span><span class="na">equalsIgnoreCase</span><span class="o">(</span><span class="s">"GET"</span><span class="o">))</span> <span class="o">{</span>
+            <span class="n">request</span> <span class="o">=</span> <span class="nc">HttpRequest</span><span class="o">.</span><span class="na">newBuilder</span><span class="o">()</span>
+                    <span class="o">.</span><span class="na">uri</span><span class="o">(</span><span class="no">URI</span><span class="o">.</span><span class="na">create</span><span class="o">(</span><span class="n">url</span><span class="o">))</span>
+                    <span class="o">.</span><span class="na">GET</span><span class="o">()</span>
+                    <span class="o">.</span><span class="na">build</span><span class="o">();</span>
+        <span class="o">}</span> <span class="k">else</span> <span class="k">if</span> <span class="o">(</span><span class="n">mode</span><span class="o">.</span><span class="na">equalsIgnoreCase</span><span class="o">(</span><span class="s">"POST"</span><span class="o">))</span> <span class="o">{</span>
+            <span class="n">request</span> <span class="o">=</span> <span class="nc">HttpRequest</span><span class="o">.</span><span class="na">newBuilder</span><span class="o">()</span>
+                    <span class="o">.</span><span class="na">uri</span><span class="o">(</span><span class="no">URI</span><span class="o">.</span><span class="na">create</span><span class="o">(</span><span class="n">url</span><span class="o">))</span>
+                    <span class="o">.</span><span class="na">POST</span><span class="o">(</span><span class="nc">HttpRequest</span><span class="o">.</span><span class="na">BodyPublishers</span><span class="o">.</span><span class="na">ofString</span><span class="o">(</span>
+                            <span class="sh">"""
+                                     {
+                                       "firstName": "Horst",
+                                       "lastName": "Flock",
+                                       "email": "h.flock@yahoomail.com",
+                                       "address": "Bauernweg 5, 4033 Basel",
+                                       "dateOfBirth": "2003-11-21"
+                                     }
+                                    """</span>
+                    <span class="o">))</span>
+                    <span class="o">.</span><span class="na">build</span><span class="o">();</span>
+        <span class="o">}</span> <span class="k">else</span> <span class="o">{</span>
             <span class="n">printUsage</span><span class="o">();</span>
             <span class="k">return</span><span class="o">;</span>
         <span class="o">}</span>
 
         <span class="kt">long</span> <span class="n">start</span><span class="o">;</span>
         <span class="k">try</span> <span class="o">(</span><span class="nc">HttpClient</span> <span class="n">client</span> <span class="o">=</span> <span class="nc">HttpClient</span><span class="o">.</span><span class="na">newHttpClient</span><span class="o">())</span> <span class="o">{</span>
-            <span class="nc">HttpRequest</span> <span class="n">getAllRequest</span> <span class="o">=</span> <span class="nc">HttpRequest</span><span class="o">.</span><span class="na">newBuilder</span><span class="o">()</span>
-                    <span class="o">.</span><span class="na">uri</span><span class="o">(</span><span class="no">URI</span><span class="o">.</span><span class="na">create</span><span class="o">(</span><span class="n">url</span><span class="o">))</span>
-                    <span class="o">.</span><span class="na">GET</span><span class="o">()</span>
-                    <span class="o">.</span><span class="na">build</span><span class="o">();</span>
-
             <span class="n">start</span> <span class="o">=</span> <span class="nc">System</span><span class="o">.</span><span class="na">nanoTime</span><span class="o">();</span>
             <span class="k">for</span> <span class="o">(</span><span class="kt">int</span> <span class="n">i</span> <span class="o">=</span> <span class="mi">0</span><span class="o">;</span> <span class="n">i</span> <span class="o">&lt;</span> <span class="n">totalRequests</span><span class="o">;</span> <span class="n">i</span><span class="o">++)</span> <span class="o">{</span>
                 <span class="kt">long</span> <span class="n">requestStart</span> <span class="o">=</span> <span class="nc">System</span><span class="o">.</span><span class="na">nanoTime</span><span class="o">();</span>
                 <span class="c1">// tag::send_webrequest[]</span>
-                <span class="n">client</span><span class="o">.</span><span class="na">sendAsync</span><span class="o">(</span><span class="n">getAllRequest</span><span class="o">,</span> <span class="nc">HttpResponse</span><span class="o">.</span><span class="na">BodyHandlers</span><span class="o">.</span><span class="na">ofString</span><span class="o">())</span>
+                <span class="n">client</span><span class="o">.</span><span class="na">sendAsync</span><span class="o">(</span><span class="n">request</span><span class="o">,</span> <span class="nc">HttpResponse</span><span class="o">.</span><span class="na">BodyHandlers</span><span class="o">.</span><span class="na">ofString</span><span class="o">())</span>
                         <span class="o">.</span><span class="na">thenRun</span><span class="o">(()</span> <span class="o">-&gt;</span> <span class="o">{</span>
                             <span class="kt">long</span> <span class="n">elapsed</span> <span class="o">=</span> <span class="nc">System</span><span class="o">.</span><span class="na">nanoTime</span><span class="o">()</span> <span class="o">-</span> <span class="n">requestStart</span><span class="o">;</span>
                             <span class="n">minResponseTime</span><span class="o">.</span><span class="na">getAndAccumulate</span><span class="o">(</span><span class="n">elapsed</span><span class="o">,</span> <span class="nl">Math:</span><span class="o">:</span><span class="n">min</span><span class="o">);</span>
@@ -2147,6 +2168,8 @@ java <span class="nt">-cp</span> target/stress-1.0.jar at.htl.Stress <span class
 </div>
 </div>
 </details>
+<div class="sect3">
+<h4 id="_test_1"><a class="anchor" href="#_test_1"></a>12.4.1. Test 1</h4>
 <div class="paragraph">
 <p>Insgesamt gab es je Implementierungsvariante 3 Durchläufe bei denen jeweils 10.000 <code>GET</code> Requests auf den <code>GetAllUsers</code> Endpunkt durchgeführt wurden. In der Datenbank sind dafür 500 Datensätze angelegt.</p>
 </div>
@@ -2156,7 +2179,7 @@ java <span class="nt">-cp</span> target/stress-1.0.jar at.htl.Stress <span class
 <div class="listingblock">
 <div class="content">
 <pre class="rouge highlight"><code data-lang="text">=== Classic (imperativ) ===
-cmd: ./run.sh "http://&lt;ip&gt;:8080/user" 10000
+cmd: ./run.sh "http://&lt;ip&gt;:8080/user" 10000 GET
 
 ### run 1 ###
 Total: 18147.424126 ms
@@ -2180,7 +2203,7 @@ Max: 26044.717073 ms
 Failures: 93
 
 === Mutiny (reaktiv) ===
-cmd: ./run.sh "http://&lt;ip&gt;:8081/user" 10000
+cmd: ./run.sh "http://&lt;ip&gt;:8081/user" 10000 GET
 
 ### run 1 ###
 Total: 18665.215653 ms
@@ -2206,6 +2229,32 @@ Failures: 1</code></pre>
 </div>
 </div>
 </details>
+<div class="paragraph">
+<p>Keine besonderen Erfolge für reaktives Programmieren.</p>
+</div>
+<div class="paragraph">
+<p>Andere Nutzer haben Ergebnisse die für Reaktiv sprechen: <a href="https://www.retit.de/investigating-the-performance-of-reactive-libraries-in-a-quarkus-microservice/#figure-8">reactive-performance</a></p>
+</div>
+</div>
+<div class="sect3">
+<h4 id="_test_2"><a class="anchor" href="#_test_2"></a>12.4.2. Test 2</h4>
+<div class="paragraph">
+<p>Beim zweiten Test gab es erneute 3 Durchläufe. Diesmal wurden aber <code>POST</code> requests und keine einfachen Gets durchgeführt.</p>
+</div>
+<details>
+<summary class="title">Ergebnisse</summary>
+<div class="content">
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="text">=== Classic (imperativ) ===
+
+
+=== Mutiny (reaktiv) ===</code></pre>
+</div>
+</div>
+</div>
+</details>
+</div>
 </div>
 </div>
 </div>
@@ -2447,7 +2496,7 @@ Failures: 1</code></pre>
 <div id="footer">
 <div id="footer-text">
 Version 1.0<br>
-Last updated 2024-12-12 14:16:56 UTC
+Last updated 2024-12-12 14:42:12 UTC
 </div>
 </div>
 </body>
