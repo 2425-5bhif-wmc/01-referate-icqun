@@ -565,7 +565,7 @@ pre.rouge .gs {
 <div class="details">
 <span id="author" class="author">Julian Schludermann</span><br>
 <span id="revnumber">version 1.0,</span>
-<span id="revdate">2024-12-10</span>
+<span id="revdate">2024-12-12</span>
 </div>
 <div id="toc" class="toc2">
 <div id="toctitle">Table of Contents</div>
@@ -691,6 +691,24 @@ pre.rouge .gs {
 </div>
 <div class="sect3">
 <h4 id="_asynchron_vs_multi_threaded"><a class="anchor" href="#_asynchron_vs_multi_threaded"></a>1.1.3. Asynchron vs Multi-Threaded</h4>
+<details>
+<summary class="title">Quellen</summary>
+<div class="content">
+<div class="ulist">
+<ul>
+<li>
+<p><a href="https://www.baeldung.com/cs/async-vs-multi-threading" class="bare">https://www.baeldung.com/cs/async-vs-multi-threading</a></p>
+</li>
+<li>
+<p><a href="https://stackoverflow.com/questions/34680985/what-is-the-difference-between-asynchronous-programming-and-multithreading" class="bare">https://stackoverflow.com/questions/34680985/what-is-the-difference-between-asynchronous-programming-and-multithreading</a></p>
+</li>
+<li>
+<p><a href="https://www.linkedin.com/pulse/multi-threading-vs-asynchronous-sundar-govindarajan-dlbnc" class="bare">https://www.linkedin.com/pulse/multi-threading-vs-asynchronous-sundar-govindarajan-dlbnc</a></p>
+</li>
+</ul>
+</div>
+</div>
+</details>
 <div class="paragraph">
 <p>Auch wenn die Begriffe <strong>asynchron</strong> und <strong>Multi-Threaded</strong> gerne vermischt werden, ist es wichtig zu verstehen, dass sie <strong>nicht dasselbe</strong> sind.</p>
 </div>
@@ -976,7 +994,7 @@ Eine Quelle veröffentlicht nur dann Events, wenn sie von einem <strong>Subscrib
 <pre class="rouge highlight"><code data-lang="java"><span class="nd">@GET</span>
 <span class="nd">@Path</span><span class="o">(</span><span class="s">"{id}"</span><span class="o">)</span>
 <span class="nd">@Produces</span><span class="o">(</span><span class="nc">MediaType</span><span class="o">.</span><span class="na">APPLICATION_JSON</span><span class="o">)</span>
-<span class="nd">@WithSession</span> <i class="conum" data-value="1"></i><b>(1)</b>
+<span class="c1">// @WithSession </span><i class="conum" data-value="1"></i><b>(1)</b>
 <span class="kd">public</span> <span class="nc">Uni</span><span class="o">&lt;</span><span class="nc">UserDto</span><span class="o">&gt;</span> <span class="nf">getById</span><span class="o">(</span><span class="nd">@PathParam</span><span class="o">(</span><span class="s">"id"</span><span class="o">)</span> <span class="nc">Long</span> <span class="n">id</span><span class="o">)</span> <span class="o">{</span> <i class="conum" data-value="2"></i><b>(2)</b>
     <span class="k">return</span> <span class="n">userRepository</span><span class="o">.</span><span class="na">findById</span><span class="o">(</span><span class="n">id</span><span class="o">)</span> <i class="conum" data-value="3"></i><b>(3)</b>
             <span class="o">.</span><span class="na">onItem</span><span class="o">().</span><span class="na">transform</span><span class="o">(</span><span class="n">user</span> <span class="o">-&gt;</span> <span class="k">new</span> <span class="nc">UserDto</span><span class="o">(</span> <i class="conum" data-value="4"></i><b>(4)</b>
@@ -995,11 +1013,11 @@ Eine Quelle veröffentlicht nur dann Events, wenn sie von einem <strong>Subscrib
 <table>
 <tr>
 <td><i class="conum" data-value="1"></i><b>1</b></td>
-<td>Startet eine reaktive <code>Session</code> für die Methode. Ohne Session können keine Datenbankzugriffe durchgeführt werden. Vergleichbar mit der klassischen (blockierenden) <code>org.Hibernate.Session</code> / <code>Entity Manager</code>. Die <code>Session</code> ermöglicht es uns unter anderem <code>CRUD</code> Operationen mit unseren Entitäten durchzuführen.</td>
+<td><span class="line-through">Startet eine reaktive <code>Session</code> für die Methode. Ohne Session können keine Datenbankzugriffe durchgeführt werden. Vergleichbar mit der klassischen (blockierenden) <code>org.Hibernate.Session</code> / <code>Entity Manager</code>. Die <code>Session</code> ermöglicht es uns unter anderem <code>CRUD</code> Operationen mit unseren Entitäten durchzuführen.</span>  Der obige Satz ist richtig, allerdings öffnet Quarkus in manchen Fällen automatisch eine Session. Dieser Beispielendpunkt ist einer dieser Fälle. Die Voraussetzungen dafür sind am Ende der Erklärung zu finden. Die in diesem Fall wichtige Voraussetzung ist <code>is declared in a class that uses a panache entity/repository</code>.</td>
 </tr>
 <tr>
 <td><i class="conum" data-value="2"></i><b>2</b></td>
-<td>Der Rückgabewert der Funktion ist nicht wie bei herkömmlichen synchronen Funktionen <code>Response</code> sondern <code>Uni&lt;Response&gt;</code>. Wir geben hier eine Eventquelle zurück, die "verspricht" <strong>genau eine Response</strong> oder <strong>eine Failure</strong> zu veröffentlichen.</td>
+<td>Der Rückgabewert der Funktion ist nicht wie bei herkömmlichen synchronen Funktionen <code>Response</code> sondern <code>Uni&lt;Response&gt;</code>.Wir geben hier eine Eventquelle zurück, die "verspricht" <strong>genau eine Response</strong> oder <strong>eine Failure</strong> zu veröffentlichen.</td>
 </tr>
 <tr>
 <td><i class="conum" data-value="3"></i><b>3</b></td>
@@ -1010,6 +1028,24 @@ Eine Quelle veröffentlicht nur dann Events, wenn sie von einem <strong>Subscrib
 <td>Mit <code>onItem().transform()</code> fügen wir einen zusätzlichen Verarbeitungsschritt in unserer <code>Pipeline</code> hinzu. In diesem Fall wird unsere <code>User</code> Entität zu einem <code>UserDto</code> umgewandelt. Das Item, das das Event mit sich trägt, wird durch <code>transform</code> also durch ein neues ersetzt. Das Ergebnis wird wieder in den Datenstrom gegeben.</td>
 </tr>
 </table>
+</div>
+<div class="imageblock">
+<div class="content">
+<img src="images/mutiny-no-session.png" alt="mutiny no session">
+</div>
+<div class="title">Figure 1. Fehler ohne aktive Session</div>
+</div>
+<div class="listingblock">
+<div class="title">Voraussetzungen für automatische Sessions</div>
+<div class="content">
+<pre class="rouge highlight"><code data-lang="java"><span class="c1">// Add @WithSessionOnDemand to a method that</span>
+<span class="c1">// - is not static</span>
+<span class="c1">// - is not synthetic</span>
+<span class="c1">// - returns Uni</span>
+<span class="c1">// - is declared in a class that uses a panache entity/repository</span>
+<span class="c1">// - is annotated with @GET, @POST, @PUT, @DELETE ,@PATCH ,@HEAD or @OPTIONS</span>
+<span class="c1">// - is not annotated with @ReactiveTransactional, @WithSession, @WithSessionOnDemand, or @WithTransaction</span></code></pre>
+</div>
 </div>
 </div>
 </details>
@@ -1201,7 +1237,7 @@ Eine Quelle veröffentlicht nur dann Events, wenn sie von einem <strong>Subscrib
 <pre class="rouge highlight"><code data-lang="java"><span class="nd">@GET</span>
 <span class="nd">@Path</span><span class="o">(</span><span class="s">"{id}"</span><span class="o">)</span>
 <span class="nd">@Produces</span><span class="o">(</span><span class="nc">MediaType</span><span class="o">.</span><span class="na">APPLICATION_JSON</span><span class="o">)</span>
-<span class="nd">@WithSession</span> <i class="conum" data-value="1"></i><b>(1)</b>
+<span class="c1">// @WithSession </span><i class="conum" data-value="1"></i><b>(1)</b>
 <span class="kd">public</span> <span class="nc">Uni</span><span class="o">&lt;</span><span class="nc">UserDto</span><span class="o">&gt;</span> <span class="nf">getById</span><span class="o">(</span><span class="nd">@PathParam</span><span class="o">(</span><span class="s">"id"</span><span class="o">)</span> <span class="nc">Long</span> <span class="n">id</span><span class="o">)</span> <span class="o">{</span> <i class="conum" data-value="2"></i><b>(2)</b>
     <span class="k">return</span> <span class="n">userRepository</span><span class="o">.</span><span class="na">findById</span><span class="o">(</span><span class="n">id</span><span class="o">)</span> <i class="conum" data-value="3"></i><b>(3)</b>
             <span class="o">.</span><span class="na">onItem</span><span class="o">().</span><span class="na">transform</span><span class="o">(</span><span class="n">user</span> <span class="o">-&gt;</span> <span class="k">new</span> <span class="nc">UserDto</span><span class="o">(</span> <i class="conum" data-value="4"></i><b>(4)</b>
@@ -1906,6 +1942,7 @@ Die erstellten Nutzer werden in der Datenbank gespeichert. Bei <code>read</code>
 <span class="kn">import</span> <span class="nn">io.quarkus.hibernate.reactive.panache.Panache</span><span class="o">;</span>
 <span class="kn">import</span> <span class="nn">io.quarkus.hibernate.reactive.panache.common.WithSession</span><span class="o">;</span>
 <span class="kn">import</span> <span class="nn">io.quarkus.hibernate.reactive.panache.common.WithTransaction</span><span class="o">;</span>
+<span class="kn">import</span> <span class="nn">io.quarkus.logging.Log</span><span class="o">;</span>
 <span class="kn">import</span> <span class="nn">io.smallrye.mutiny.Uni</span><span class="o">;</span>
 <span class="kn">import</span> <span class="nn">jakarta.inject.Inject</span><span class="o">;</span>
 <span class="kn">import</span> <span class="nn">jakarta.ws.rs.*</span><span class="o">;</span>
@@ -1924,7 +1961,9 @@ Die erstellten Nutzer werden in der Datenbank gespeichert. Bei <code>read</code>
 
     <span class="nd">@GET</span>
     <span class="nd">@Produces</span><span class="o">(</span><span class="nc">MediaType</span><span class="o">.</span><span class="na">APPLICATION_JSON</span><span class="o">)</span>
-    <span class="nd">@WithSession</span>
+    <span class="c1">// @WithSession</span>
+    <span class="c1">// Not needed (https://quarkus.io/guides/hibernate-reactive-panache#transactions)</span>
+    <span class="c1">// and: https://stackoverflow.com/questions/77528402/missing-withsession-with-quarkus-resteasy-reactive-causes-java-lang-illegalstat</span>
     <span class="kd">public</span> <span class="nc">Uni</span><span class="o">&lt;</span><span class="nc">List</span><span class="o">&lt;</span><span class="nc">UserDto</span><span class="o">&gt;&gt;</span> <span class="nf">getAll</span><span class="o">()</span> <span class="o">{</span>
         <span class="k">return</span> <span class="n">userRepository</span><span class="o">.</span><span class="na">listAll</span><span class="o">()</span>
                 <span class="o">.</span><span class="na">onItem</span><span class="o">().</span><span class="na">transform</span><span class="o">(</span><span class="n">users</span> <span class="o">-&gt;</span>
@@ -1943,7 +1982,7 @@ Die erstellten Nutzer werden in der Datenbank gespeichert. Bei <code>read</code>
     <span class="nd">@GET</span>
     <span class="nd">@Path</span><span class="o">(</span><span class="s">"{id}"</span><span class="o">)</span>
     <span class="nd">@Produces</span><span class="o">(</span><span class="nc">MediaType</span><span class="o">.</span><span class="na">APPLICATION_JSON</span><span class="o">)</span>
-    <span class="nd">@WithSession</span> <i class="conum" data-value="1"></i><b>(1)</b>
+    <span class="c1">// @WithSession </span><i class="conum" data-value="1"></i><b>(1)</b>
     <span class="kd">public</span> <span class="nc">Uni</span><span class="o">&lt;</span><span class="nc">UserDto</span><span class="o">&gt;</span> <span class="nf">getById</span><span class="o">(</span><span class="nd">@PathParam</span><span class="o">(</span><span class="s">"id"</span><span class="o">)</span> <span class="nc">Long</span> <span class="n">id</span><span class="o">)</span> <span class="o">{</span> <i class="conum" data-value="2"></i><b>(2)</b>
         <span class="k">return</span> <span class="n">userRepository</span><span class="o">.</span><span class="na">findById</span><span class="o">(</span><span class="n">id</span><span class="o">)</span> <i class="conum" data-value="3"></i><b>(3)</b>
                 <span class="o">.</span><span class="na">onItem</span><span class="o">().</span><span class="na">transform</span><span class="o">(</span><span class="n">user</span> <span class="o">-&gt;</span> <span class="k">new</span> <span class="nc">UserDto</span><span class="o">(</span> <i class="conum" data-value="4"></i><b>(4)</b>
@@ -2405,7 +2444,7 @@ Failures: 1</code></pre>
 <div id="footer">
 <div id="footer-text">
 Version 1.0<br>
-Last updated 2024-12-10 11:49:57 UTC
+Last updated 2024-12-12 14:13:38 UTC
 </div>
 </div>
 </body>
