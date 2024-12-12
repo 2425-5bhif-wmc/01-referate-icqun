@@ -3,6 +3,7 @@ package at.htl.feature.user;
 import io.quarkus.hibernate.reactive.panache.Panache;
 import io.quarkus.hibernate.reactive.panache.common.WithSession;
 import io.quarkus.hibernate.reactive.panache.common.WithTransaction;
+import io.quarkus.logging.Log;
 import io.smallrye.mutiny.Uni;
 import jakarta.inject.Inject;
 import jakarta.ws.rs.*;
@@ -21,7 +22,9 @@ public class UserResource {
 
     @GET
     @Produces(MediaType.APPLICATION_JSON)
-    @WithSession
+    // @WithSession
+    // Not needed (https://quarkus.io/guides/hibernate-reactive-panache#transactions)
+    // and: https://stackoverflow.com/questions/77528402/missing-withsession-with-quarkus-resteasy-reactive-causes-java-lang-illegalstat
     public Uni<List<UserDto>> getAll() {
         return userRepository.listAll()
                 .onItem().transform(users ->
@@ -40,7 +43,7 @@ public class UserResource {
     @GET
     @Path("{id}")
     @Produces(MediaType.APPLICATION_JSON)
-    @WithSession // <.>
+    // @WithSession // <.>
     public Uni<UserDto> getById(@PathParam("id") Long id) { // <.>
         return userRepository.findById(id) // <.>
                 .onItem().transform(user -> new UserDto( //<.>

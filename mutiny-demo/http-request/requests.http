@@ -22,4 +22,3 @@ Accept: application/json
 ### Get user by id
 GET http://localhost:8081/user/{{id}}
 Accept: application/json
-

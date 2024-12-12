@@ -44,6 +44,14 @@ Bei der *asynchronen* Verarbeitung werden die Schritte oder Aufgaben
 erledigt.
 
 ==== Asynchron vs Multi-Threaded
+.Quellen
+[%collapsible]
+====
+* https://www.baeldung.com/cs/async-vs-multi-threading
+* https://stackoverflow.com/questions/34680985/what-is-the-difference-between-asynchronous-programming-and-multithreading
+* https://www.linkedin.com/pulse/multi-threading-vs-asynchronous-sundar-govindarajan-dlbnc
+====
+
 Auch wenn die Begriffe *asynchron* und *Multi-Threaded* gerne vermischt werden, ist es wichtig zu verstehen, dass sie *nicht dasselbe* sind.
 
 Sowohl *asynchrone* Datenverarbeitung als auch *Multithreading* (Mehrsträngigkeit) haben das Ziel mehrere Aufgaben *gleichzeitig* auszuführen.
@@ -183,13 +191,29 @@ include::../../mutiny-demo/src/main/java/at/htl/feature/user/UserResource.java[t
 .Erklärung
 [%collapsible]
 ====
-<.> Startet eine reaktive `Session` für die Methode. Ohne Session können keine Datenbankzugriffe durchgeführt werden. Vergleichbar mit der klassischen (blockierenden) `org.Hibernate.Session` / `Entity Manager`. Die `Session` ermöglicht es uns unter anderem `CRUD` Operationen mit unseren Entitäten durchzuführen.
+<.> [line-through]#Startet eine reaktive `Session` für die Methode. Ohne Session können keine Datenbankzugriffe durchgeführt werden. Vergleichbar mit der klassischen (blockierenden) `org.Hibernate.Session` / `Entity Manager`. Die `Session` ermöglicht es uns unter anderem `CRUD` Operationen mit unseren Entitäten durchzuführen.#  Der obige Satz ist richtig, allerdings öffnet Quarkus in manchen Fällen automatisch eine Session. Dieser Beispielendpunkt ist einer dieser Fälle. Die Voraussetzungen dafür sind am Ende der Erklärung zu finden. Die in diesem Fall wichtige Voraussetzung ist `is declared in a class that uses a panache entity/repository`.
 
-<.> Der Rückgabewert der Funktion ist nicht wie bei herkömmlichen synchronen Funktionen `Response` sondern `Uni<Response>`. Wir geben hier eine Eventquelle zurück, die "verspricht" *genau eine Response* oder *eine Failure* zu veröffentlichen.
+
+<.> Der Rückgabewert der Funktion ist nicht wie bei herkömmlichen synchronen Funktionen `Response` sondern `Uni<Response>`.Wir geben hier eine Eventquelle zurück, die "verspricht" *genau eine Response* oder *eine Failure* zu veröffentlichen.
 
 <.> In diesem Fall ist unsere Eventquelle der Aufruf des PanacheRepositories `findById`. Dieser gibt einen `Uni<User>` zurück, verspricht also genau einen Benutzer oder einen Fehler zurückzugeben.
 
 <.> Mit `onItem().transform()` fügen wir einen zusätzlichen Verarbeitungsschritt in unserer `Pipeline` hinzu. In diesem Fall wird unsere `User` Entität zu einem `UserDto` umgewandelt. Das Item, das das Event mit sich trägt, wird durch `transform` also durch ein neues ersetzt. Das Ergebnis wird wieder in den Datenstrom gegeben.
+
+.Fehler ohne aktive Session
+image::mutiny-no-session.png[]
+
+.Voraussetzungen für automatische Sessions
+[source, java]
+----
+// Add @WithSessionOnDemand to a method that
+// - is not static
+// - is not synthetic
+// - returns Uni
+// - is declared in a class that uses a panache entity/repository
+// - is annotated with @GET, @POST, @PUT, @DELETE ,@PATCH ,@HEAD or @OPTIONS
+// - is not annotated with @ReactiveTransactional, @WithSession, @WithSessionOnDemand, or @WithTransaction
+----
 ====
 image::get-by-id-pipeline.png[]
 
@@ -547,7 +571,7 @@ include::../../stress/src/main/java/at/htl/Stress.java[]
 ----
 ====
 
-Insgesamt gab es je Implementierungsvariante 3 Durchläufe bei denen jeweils 10000 `GET` Requests auf den `GetAllUsers` Endpunkt durchgeführt wurden. In der Datenbank sind dafür 500 Datensätze angelegt.
+Insgesamt gab es je Implementierungsvariante 3 Durchläufe bei denen jeweils 10.000 `GET` Requests auf den `GetAllUsers` Endpunkt durchgeführt wurden. In der Datenbank sind dafür 500 Datensätze angelegt.
 
 .Ergebnisse
 [%collapsible]
