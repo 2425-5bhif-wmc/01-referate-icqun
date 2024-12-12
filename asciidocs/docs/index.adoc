@@ -571,6 +571,7 @@ include::../../stress/src/main/java/at/htl/Stress.java[]
 ----
 ====
 
+==== Test 1
 Insgesamt gab es je Implementierungsvariante 3 Durchläufe bei denen jeweils 10.000 `GET` Requests auf den `GetAllUsers` Endpunkt durchgeführt wurden. In der Datenbank sind dafür 500 Datensätze angelegt.
 
 .Ergebnisse
@@ -579,7 +580,7 @@ Insgesamt gab es je Implementierungsvariante 3 Durchläufe bei denen jeweils 10.
 [source,text]
 ----
 === Classic (imperativ) ===
-cmd: ./run.sh "http://<ip>:8080/user" 10000
+cmd: ./run.sh "http://<ip>:8080/user" 10000 GET
 
 ### run 1 ###
 Total: 18147.424126 ms
@@ -603,7 +604,7 @@ Max: 26044.717073 ms
 Failures: 93
 
 === Mutiny (reaktiv) ===
-cmd: ./run.sh "http://<ip>:8081/user" 10000
+cmd: ./run.sh "http://<ip>:8081/user" 10000 GET
 
 ### run 1 ###
 Total: 18665.215653 ms
@@ -628,7 +629,26 @@ Failures: 1
 ----
 ====
 
-Andere erfahrenere Nutzer haben deutlich bessere Ergebnisse: https://www.retit.de/investigating-the-performance-of-reactive-libraries-in-a-quarkus-microservice/#figure-8[reactive-performance]
+Keine besonderen Erfolge für reaktives Programmieren.
+
+Andere Nutzer haben Ergebnisse die für Reaktiv sprechen: https://www.retit.de/investigating-the-performance-of-reactive-libraries-in-a-quarkus-microservice/#figure-8[reactive-performance]
+
+==== Test 2
+Beim zweiten Test gab es erneute 3 Durchläufe. Diesmal wurden aber `POST` requests und keine einfachen Gets durchgeführt.
+
+.Ergebnisse
+[%collapsible]
+====
+[source,text]
+----
+=== Classic (imperativ) ===
+
+
+=== Mutiny (reaktiv) ===
+
+----
+====
+
 
 == Bonus: Franklyn
 

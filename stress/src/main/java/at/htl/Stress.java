@@ -4,10 +4,6 @@ import java.net.URI;
 import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.concurrent.CompletableFuture;
-import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicLong;
 
@@ -18,37 +14,61 @@ public class Stress {
     private static final AtomicLong minResponseTime = new AtomicLong(Long.MAX_VALUE);
 
     private static void printUsage() {
-        System.err.println("[usage]: <url> <total-requests>");
+        System.err.println("[usage]: <url> <total-requests> <mode>");
         System.err.println("where total-requests > 0");
+        System.err.println("mode is one of GET,POST");
     }
 
     public static void main(String[] args) {
-        if (args.length < 2) {
+        if (args.length < 3) {
             printUsage();
             return;
         }
 
         String url = args[0];
         int totalRequests = Integer.parseInt(args[1]);
+        String mode = args[2];
         System.out.printf("Performing %,d requests%n", totalRequests);
 
-        if (totalRequests <= 0){
+        if (totalRequests <= 0) {
+            printUsage();
+            return;
+        }
+
+        HttpRequest request;
+
+        if (mode.equalsIgnoreCase("GET")) {
+            request = HttpRequest.newBuilder()
+                    .uri(URI.create(url))
+                    .GET()
+                    .build();
+        } else if (mode.equalsIgnoreCase("POST")) {
+            request = HttpRequest.newBuilder()
+                    .uri(URI.create(url))
+                    .POST(HttpRequest.BodyPublishers.ofString(
+                            """
+                                     {
+                                       "firstName": "Horst",
+                                       "lastName": "Flock",
+                                       "email": "h.flock@yahoomail.com",
+                                       "address": "Bauernweg 5, 4033 Basel",
+                                       "dateOfBirth": "2003-11-21"
+                                     }
+                                    """
+                    ))
+                    .build();
+        } else {
             printUsage();
             return;
         }
 
         long start;
         try (HttpClient client = HttpClient.newHttpClient()) {
-            HttpRequest getAllRequest = HttpRequest.newBuilder()
-                    .uri(URI.create(url))
-                    .GET()
-                    .build();
-
             start = System.nanoTime();
             for (int i = 0; i < totalRequests; i++) {
                 long requestStart = System.nanoTime();
                 // tag::send_webrequest[]
-                client.sendAsync(getAllRequest, HttpResponse.BodyHandlers.ofString())
+                client.sendAsync(request, HttpResponse.BodyHandlers.ofString())
                         .thenRun(() -> {
                             long elapsed = System.nanoTime() - requestStart;
                             minResponseTime.getAndAccumulate(elapsed, Math::min);
