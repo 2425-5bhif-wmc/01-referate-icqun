@@ -630,27 +630,6 @@ Failures: 1
 
 == Bonus: Franklyn
 
-== Glossar
-* *Mutiny*
-** Deutsch: Meuterei
-*** gemeinsame Auflehnung gegen jemanden oder etwas
-** In Bezug auf Quarkus:
-*** "The Mutiny name comes from the contraction of Multi and Uni names"
-*** Möglicherweise soll es auch eine Rebellion (ein Aufstand) gegen traditionelle, synchrone bzw. asynchrone Programmierweisen darstellen
-* *Primär*: An erster Stelle stehend.
-** In Bezug auf Quarkus: Mutiny ist primär im Sinne von: Support für Mutiny wird priorisiert.
-* *Mere mortals*: Normalsterbliche
-* *Java Spring*: Konkurrenzprodukt zu Quarkus
-* *Event*: Ereignis
-* *Sequenziell*: Hintereinander
-* *I/O Operation*:
-** Unter *I/O* versteht man die Kommunikation einer Applikation mit ihrer Außenwelt.
-* *Subscribe*: Abonnieren
-** für den fortlaufenden Bezug bestellt
-* *Repräsentieren*: etwas, nach außen vertreten
-* *Kontext*: inhaltlicher Sach- und Situationszusammenhang, in dem etwas (z.B. eine Äußerung) steht
-* *Imperativ (Programmierung)*: Ein Programm besteht aus einer Folge von Anweisungen, die nacheinander ausgeführt werden.
-
 == Quellen
 * https://quarkus.io/guides/mutiny-primer
 * https://smallrye.io/smallrye-mutiny/latest/reference/why-is-asynchronous-important/
@@ -661,7 +640,6 @@ Failures: 1
 * https://smallrye.io/smallrye-mutiny-zero/latest/
 * https://smallrye.io/smallrye-mutiny/latest/
 * https://gist.github.com/staltz/868e7e9bc2a7b8c1f754
-* https://www.benji.dog/articles/git-config/
 * https://quarkus.io/guides/quarkus-reactive-architecture#engine
 * https://github.com/ReactiveX/RxJava
 * https://projectreactor.io/
@@ -684,7 +662,6 @@ Failures: 1
 * https://smallrye.io/smallrye-mutiny/latest/reference/publications/
 * https://dl.acm.org/doi/10.1145/3486605.3486788
 * https://smallrye.io/smallrye-mutiny/latest/tags-index/#advanced
-* https://raw.githubusercontent.com/alexmchale/merc-mud/refs/heads/master/doc/hacker.txt
 * https://de.wikipedia.org/wiki/Imperative_Programmierung
 * https://quarkus.io/guides/hibernate-reactive-panache
 * https://inria.hal.science/hal-03409277/file/paper-author-version.pdf
@@ -694,4 +671,27 @@ Failures: 1
 * https://docs.oracle.com/javase/8/docs/api/java/util/concurrent/Future.html
 * https://www.baeldung.com/java-completablefuture
 * https://medium.com/@kshitij-srivastav/mastering-back-pressure-and-reactive-programming-with-spring-webclient-ed152f3cd8de
+* https://quarkus.io/guides/hibernate-reactive
+* https://quarkus.io/continuum/
+* https://stackoverflow.com/questions/77528402/missing-withsession-with-quarkus-resteasy-reactive-causes-java-lang-illegalstat
 
+== Glossar
+* *Mutiny*
+** Deutsch: Meuterei
+*** gemeinsame Auflehnung gegen jemanden oder etwas
+** In Bezug auf Quarkus:
+*** "The Mutiny name comes from the contraction of Multi and Uni names"
+*** Möglicherweise soll es auch eine Rebellion (ein Aufstand) gegen traditionelle, synchrone bzw. asynchrone Programmierweisen darstellen
+* *Primär*: An erster Stelle stehend.
+** In Bezug auf Quarkus: Mutiny ist primär im Sinne von: Support für Mutiny wird priorisiert.
+* *Mere mortals*: Normalsterbliche
+* *Java Spring*: Konkurrenzprodukt zu Quarkus
+* *Event*: Ereignis
+* *Sequenziell*: Hintereinander
+* *I/O Operation*:
+** Unter *I/O* versteht man die Kommunikation einer Applikation mit ihrer Außenwelt.
+* *Subscribe*: Abonnieren
+** für den fortlaufenden Bezug bestellt
+* *Repräsentieren*: etwas, nach außen vertreten
+* *Kontext*: inhaltlicher Sach- und Situationszusammenhang, in dem etwas (z.B. eine Äußerung) steht
+* *Imperativ (Programmierung)*: Ein Programm besteht aus einer Folge von Anweisungen, die nacheinander ausgeführt werden.
