@@ -2049,9 +2049,8 @@ Die erstellten Nutzer werden in der Datenbank gespeichert. Bei <code>read</code>
 <pre class="rouge highlight"><code data-lang="shell"><span class="c">#!/usr/bin/env bash</span>
 
 <span class="nb">set</span> <span class="nt">-e</span>
-<span class="nb">shift
 
-</span>mvn clean package
+mvn clean package
 java <span class="nt">-cp</span> target/stress-1.0.jar at.htl.Stress <span class="s2">"</span><span class="nv">$@</span><span class="s2">"</span></code></pre>
 </div>
 </div>
@@ -2183,48 +2182,36 @@ cmd: ./run.sh "http://&lt;ip&gt;:8080/user" 10000 GET
 
 ### run 1 ###
 Total: 18147.424126 ms
-Avg: 1.814742 ms
-Min: 6236.969171 ms
-Max: 17163.319449 ms
 Failures: 0
+Avg: 1.814742 ms, Min: 6236.969171 ms, Max: 17163.319449 ms
 
 ### run 2 ###
 Total: 12474.264195 ms
-Avg: 1.247426 ms
-Min: 4522.708017 ms
-Max: 11643.565464 ms
 Failures: 355
+Avg: 1.247426 ms, Min: 4522.708017 ms, Max: 11643.565464 ms
 
 ### run 3 ###
 Total: 27386.730991 ms
-Avg: 2.738673 ms
-Min: 2568.849859 ms
-Max: 26044.717073 ms
 Failures: 93
+Avg: 2.738673 ms, Min: 2568.849859 ms, Max: 26044.717073 ms
 
 === Mutiny (reaktiv) ===
 cmd: ./run.sh "http://&lt;ip&gt;:8081/user" 10000 GET
 
 ### run 1 ###
 Total: 18665.215653 ms
-Avg: 1.866522 ms
-Min: 2361.612174 ms
-Max: 17741.019128 ms
 Failures: 62
+Avg: 1.866522 ms, Min: 2361.612174 ms, Max: 17741.019128 ms
 
 ### run 2 ###
 Total: 17007.617277 ms
-Avg: 1.700762 ms
-Min: 1198.679087 ms
-Max: 16150.559079 ms
 Failures: 29
+Avg: 1.700762 ms, Min: 1198.679087 ms, Max: 16150.559079 ms
 
 ### run 3 ###
 Total: 13618.562836 ms
-Avg: 1.361856 ms
-Min: 875.661200 ms
-Max: 13155.545723 ms
-Failures: 1</code></pre>
+Failures: 1
+Avg: 1.361856 ms, Min: 875.661200 ms, Max: 13155.545723 ms</code></pre>
 </div>
 </div>
 </div>
@@ -2239,7 +2226,10 @@ Failures: 1</code></pre>
 <div class="sect3">
 <h4 id="_test_2"><a class="anchor" href="#_test_2"></a>12.4.2. Test 2</h4>
 <div class="paragraph">
-<p>Beim zweiten Test gab es erneute 3 Durchläufe. Diesmal wurden aber <code>POST</code> requests und keine einfachen Gets durchgeführt.</p>
+<p>Beim zweiten Test gab es erneute 3 Durchläufe. Diesmal wurden aber <code>POST</code> requests zum Erstellen eines neuen Benutzers und keine GET requests durchgeführt. Erneut handelt es sich um 10.0000 Stück.</p>
+</div>
+<div class="paragraph">
+<p>Diese Ergebnisse zeigen, dass trotz der relativ großen Datenmengen der erste Test definitiv CPU-Bound und nicht I/O-Bound war. Im zweiten Test ist durch das rechenintensivere Einfügen in die Datenbank genug für einen deutlichen Sieg für Mutiny.</p>
 </div>
 <details>
 <summary class="title">Ergebnisse</summary>
@@ -2247,9 +2237,33 @@ Failures: 1</code></pre>
 <div class="listingblock">
 <div class="content">
 <pre class="rouge highlight"><code data-lang="text">=== Classic (imperativ) ===
+cmd: ./run.sh "http://&lt;ip&gt;:8080/user" 10000 POST
+Total: 5770.457688 ms
+Failures: 0
+Avg: 0.577046 ms, Min: 780.184824 ms, Max: 5563.553917 ms
 
+Total: 4549.782881 ms
+Failures: 0
+Avg: 0.454978 ms, Min: 155.193525 ms, Max: 4086.387348 ms
 
-=== Mutiny (reaktiv) ===</code></pre>
+Total: 4790.748935 ms
+Failures: 0
+Avg: 0.479075 ms, Min: 272.162184 ms, Max: 4325.328227 ms
+
+=== Mutiny (reaktiv) ===
+cmd: ./run.sh "http://&lt;ip&gt;:8081/user" 10000 POST
+
+Total: 2316.556386 ms
+Failures: 0
+Avg: 0.231656 ms, Min: 91.191415 ms, Max: 1895.924089 ms
+
+Total: 2761.694257 ms
+Failures: 0
+Avg: 0.276169 ms, Min: 250.197813 ms, Max: 1566.993199 ms
+
+Total: 2393.384885 ms
+Failures: 0
+Avg: 0.239338 ms, Min: 115.592453 ms, Max: 1822.428505 ms</code></pre>
 </div>
 </div>
 </div>
@@ -2496,7 +2510,7 @@ Failures: 1</code></pre>
 <div id="footer">
 <div id="footer-text">
 Version 1.0<br>
-Last updated 2024-12-12 14:42:12 UTC
+Last updated 2024-12-12 15:10:05 UTC
 </div>
 </div>
 </body>
