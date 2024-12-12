@@ -628,6 +628,8 @@ Failures: 1
 ----
 ====
 
+Andere erfahrenere Nutzer haben deutlich bessere Ergebnisse: https://www.retit.de/investigating-the-performance-of-reactive-libraries-in-a-quarkus-microservice/#figure-8[reactive-performance]
+
 == Bonus: Franklyn
 
 == Quellen
