@@ -462,7 +462,7 @@ Für die imperative Implementierung werden
 für als Bibliotheken für Datenbankzugriffe verwendet.
 
 .application.properties
-[source, properties, highlight=4]
+[source, properties, highlight=7]
 ----
 include::../../classic-demo/src/main/resources/application.properties[]
 ----
@@ -514,7 +514,7 @@ Für die reaktive Implementierung werden
 für als Bibliotheken für Datenbankzugriffe verwendet.
 
 .application.properties
-[source, properties, highlight=4]
+[source, properties, highlight=7]
 ----
 include::../../mutiny-demo/src/main/resources/application.properties[]
 ----
