@@ -565,7 +565,7 @@ pre.rouge .gs {
 <div class="details">
 <span id="author" class="author">Julian Schludermann</span><br>
 <span id="revnumber">version 1.0,</span>
-<span id="revdate">2024-12-12</span>
+<span id="revdate">2024-12-13</span>
 </div>
 <div id="toc" class="toc2">
 <div id="toctitle">Table of Contents</div>
@@ -1741,11 +1741,11 @@ Die erstellten Nutzer werden in der Datenbank gespeichert. Bei <code>read</code>
 <pre class="rouge highlight"><code data-lang="properties"><span class="py">quarkus.package.jar.type</span><span class="p">=</span><span class="s">uber-jar</span>
 <span class="py">quarkus.http.port</span><span class="p">=</span><span class="s">8080</span>
 
-<span class="hll"><span class="py">quarkus.datasource.db-kind</span> <span class="p">=</span> <span class="s">postgresql</span>
-</span><span class="py">quarkus.datasource.username</span> <span class="p">=</span> <span class="s">app</span>
+<span class="py">quarkus.datasource.db-kind</span> <span class="p">=</span> <span class="s">postgresql</span>
+<span class="py">quarkus.datasource.username</span> <span class="p">=</span> <span class="s">app</span>
 <span class="py">quarkus.datasource.password</span> <span class="p">=</span> <span class="s">app</span>
-<span class="py">quarkus.datasource.jdbc.url</span> <span class="p">=</span> <span class="s">jdbc:postgresql://localhost:5432/db</span>
-<span class="err">%</span><span class="py">prod.quarkus.datasource.jdbc.url</span> <span class="p">=</span> <span class="s">jdbc:postgresql://postgres:5432/db</span>
+<span class="hll"><span class="py">quarkus.datasource.jdbc.url</span> <span class="p">=</span> <span class="s">jdbc:postgresql://localhost:5432/db</span>
+</span><span class="err">%</span><span class="py">prod.quarkus.datasource.jdbc.url</span> <span class="p">=</span> <span class="s">jdbc:postgresql://postgres:5432/db</span>
 
 <span class="err">%</span><span class="py">dev.quarkus.hibernate-orm.database.generation</span><span class="p">=</span><span class="s">drop-and-create</span>
 <span class="err">%</span><span class="py">prod.quarkus.hibernate-orm.database.generation</span><span class="p">=</span><span class="s">update</span></code></pre>
@@ -1899,11 +1899,11 @@ Die erstellten Nutzer werden in der Datenbank gespeichert. Bei <code>read</code>
 <pre class="rouge highlight"><code data-lang="properties"><span class="py">quarkus.package.jar.type</span><span class="p">=</span><span class="s">uber-jar</span>
 <span class="py">quarkus.http.port</span><span class="p">=</span><span class="s">8081</span>
 
-<span class="hll"><span class="py">quarkus.datasource.db-kind</span> <span class="p">=</span> <span class="s">postgresql</span>
-</span><span class="py">quarkus.datasource.username</span> <span class="p">=</span> <span class="s">app</span>
+<span class="py">quarkus.datasource.db-kind</span> <span class="p">=</span> <span class="s">postgresql</span>
+<span class="py">quarkus.datasource.username</span> <span class="p">=</span> <span class="s">app</span>
 <span class="py">quarkus.datasource.password</span> <span class="p">=</span> <span class="s">app</span>
-<span class="err">%</span><span class="py">dev.quarkus.datasource.reactive.url</span> <span class="p">=</span> <span class="s">vertx-reactive:postgresql://localhost:5432/db</span>
-<span class="err">%</span><span class="py">prod.quarkus.datasource.reactive.url</span> <span class="p">=</span> <span class="s">vertx-reactive:postgresql://postgres:5432/db</span>
+<span class="hll"><span class="err">%</span><span class="py">dev.quarkus.datasource.reactive.url</span> <span class="p">=</span> <span class="s">vertx-reactive:postgresql://localhost:5432/db</span>
+</span><span class="err">%</span><span class="py">prod.quarkus.datasource.reactive.url</span> <span class="p">=</span> <span class="s">vertx-reactive:postgresql://postgres:5432/db</span>
 
 <span class="err">%</span><span class="py">dev.quarkus.hibernate-orm.database.generation</span><span class="p">=</span><span class="s">drop-and-create</span>
 <span class="err">%</span><span class="py">prod.quarkus.hibernate-orm.database.generation</span><span class="p">=</span><span class="s">update</span></code></pre>
@@ -2510,7 +2510,7 @@ Avg: 0.239338 ms, Min: 115.592453 ms, Max: 1822.428505 ms</code></pre>
 <div id="footer">
 <div id="footer-text">
 Version 1.0<br>
-Last updated 2024-12-12 15:10:05 UTC
+Last updated 2024-12-13 06:55:51 UTC
 </div>
 </div>
 </body>
